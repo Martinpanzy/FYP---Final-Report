@@ -1,0 +1,26 @@
+\chapter{Evaluation Plan}
+%deliverables will be evaluated and what are the project expectations.
+%clear criteria upon which software deliverables are assessed.
+
+%The evaluation plan should detail how you expect to measure the success of the project. In particular it should document any tests that are required to ensure that the project deliverable(s) function correctly, together with (where appropriate) details of experiments required to evaluate the work with respect to other products or research results
+
+In order to assess robustness and performance of my approach, a series of experiments of both individual components and integrated system will be conducted. As evaluation criteria, I will focus on the success rate and the execution times of each test. Then an average execution time will be calculated.
+
+\section{Stage One}
+Each step mentioned in section 3.2 will be evaluated as follows. 
+\begin{itemize}
+ \item When placing the shoe in the visible range of the workspace camera, test if the vision algorithm can correctly detect and calculate the 3D location of it. If there is no shoe, test whether the algorithm can report or not.
+ \item By providing a 3D location, test if the robot can successfully plan a trajectory and move its gripper to that location.
+ \item When placing the shoe next to the gripper camera, test whether the shoe holes can be detected and the precise location of one hole be calculated.
+ \item When the location of one hole is provided, test if the gripper can pass the shoelaces into that hole.
+\end{itemize}
+Each task will be tested at least 20 times before integrating them together. Whether the robot is capable to detect the shoe on the table and pass a shoelace through one hole will be the final evaluating method of stage one. The ideal success rate should be greater than 90 percent at least.
+
+\section{Stage Two}
+Stage two will first be tested individually. Since the motion of pulling shoelace out is considered as a pre-computed trajectory, this part will be evaluated by whether the robot can correctly detect the head of the shoelace and follow the planned trajectory to pull it out. After this, stage one and two will be combined and tested together, the success rate and average execution time of detecting a shoe then completing one hole will be calculated based on at least 30 times test. The ideal success rate should be greater than 80 percent at least.
+
+\section{Stage Three}
+The success of the first two stages will indicate the vision algorithm is desirable. Thus, the biggest problem of stage three is considered as the robot might pass the shoelace into the hole with an incorrect order. Therefore, whether the robot can complete a series of shoelace work in an orderly manner will be an important aspect of evaluation. This stage will be tested together with stage one and two at least 30 times.
+
+\section{Extension}
+If this project goes well and has a chance to combine with Robot manipulation of shoelaces - vision project, whether the robot can perform a complete shoe-lacing work will be assessed and execution time will be calculated.

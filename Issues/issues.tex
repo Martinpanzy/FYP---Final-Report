@@ -1,0 +1,31 @@
+\chapter{Issues}
+
+\section{Safety}
+There are some foreseeable safety risks of this project, each of which is listed below and the corresponding solution is discussed. 
+
+\begin{itemize}
+ \item Electrical safety - shocks to myself or others from YuMi power supply.
+
+Solution: Carefully plug-in power supply to YuMi each time and follow the instruction manual to turn on and shut down. 
+
+ \item Physical safety - damage from YuMi's arms and grippers to me and others.
+ 
+Solution: YuMi is placed in a spacious environment, whose arm and gripper could not enter lab members' normal range of activities. Moreover, according to YuMi's product specification \citep{Productspecification}, if an unexpected mechanical disturbance happens, the robot will stop and then slightly back off from its stop position. In addition, YuMi's Cartesian speed supervision function limits its elbow and wrist speed in both manual and automatic mode. Once the limit is exceeded, the robot motion will be stopped. Finally, the FlexPendant emergency stop button can remove power from the actuators thus stop the robot. 
+ 
+ \item Fire safety - possible fire risk from YuMi.
+
+Solution: YuMi removes the batteries thus eliminate the fire risk when charging. Also, the robot system complies with the requirements of UL (Underwriters Laboratories) for fire safety \citep{Productspecification}.
+
+ \item Data Infrastructure safety
+ 
+Solution: One laptop from Imperial College Personal Robotics Lab will be used in this project. I am using a separate user account thus will not adversely affect other people's code or programs.
+ 
+\end{itemize}
+
+In general, any operations that I am uncertain about whether it will cause a safety issue will be made after asking the PhDs in the lab. 
+
+\section{Ethical}
+As the development of robotics, there are more and more ethical and social implications posed by this technology need to be aware of. Some typical issues include job displacement, privacy, AI bias etc. Considering this project, machine learning might not be applied to motion planning part and the vision algorithm is based on the open source YOLO and OpenCV libraries. The real-time images obtained from cameras will not be saved or used except to lace up shoes. The robot will not draw on information about the user’s current physical, cognitive and emotional state etc, thus it is reckoned that the privacy and AI bias issues are not the concern. The aim of this project is robotics research. Thus, it is not considered that the progress of this project will be used in an industrial company and replace human. 
+
+\section{Legal}
+The code of this project will mainly be developed by myself and only will employ some open source libraries such as OpenCV and OMPL etc. Therefore will not infringe the intellectual property rights of others.

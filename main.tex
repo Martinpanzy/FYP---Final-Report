@@ -1,0 +1,72 @@
+\documentclass[12pt]{report}
+
+\usepackage{subfigure}
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{pgfgantt}   
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{setspace}
+
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=3cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=black]{hyperref}
+
+\begin{document}
+\input{title/title.tex}
+\onehalfspacing
+\setlength{\parskip}{0.5em}
+\begin{abstract}
+%The abstract is a very brief summary of the report’s contents. Somebody unfamiliar with your project should have a good idea of what it’s about having read the abstract alone and will know whether it will be of interest to them. The abstract should (very concisely) summarise the topic, content and conclusions of the project. Abstracts can vary in length from 50 words up to at most 200 words. They are more concise than executive summaries.
+
+This project
+
+%This report reviews work on motion planning and object detection, examines available vision and robotic hardware for performing shoe lace and hole detection and manipulation, and establishes the criteria for the middleware that will be used for the project. Evaluation criteria are established as a sequence of increasingly difficult shoelace manipulation, starting from passing through a shoe hole, up to fully completing a shoe.
+\end{abstract}
+
+\renewcommand{\abstractname}{Acknowledgements}
+% It is usual to thank those individuals who have provided particularly useful assistance, technical or otherwise, during your project. 
+\begin{abstract}
+Thanks mum!
+\end{abstract}
+
+%\hypersetup{linkcolor=black}
+\setlength{\parskip}{0em}
+\tableofcontents
+\newpage
+
+%\listoffigures
+%\listoftables
+\setlength{\parskip}{0.5em}
+\input{introduction/introduction.tex}
+\input{background/background.tex}
+\input{RequirementsCap/requirementscap.tex}
+
+% The central part of the report usually consists of three or four chapters detailing the technical work undertaken during the project. 
+\input{AnalysisDesign/analysisdesign.tex}
+\input{Implementation/implement.tex}
+\input{Testing/testing.tex}
+\input{Results/results.tex}
+\input{evaluation/Eval.tex}
+\input{conclusion/conclusion.tex}
+\input{Futurework/future.tex}
+\input{UserGuide/userguide.tex}
+
+
+\bibliographystyle{plainnat}
+\bibliography{bibs/sample}
+\input{appendix/appendix.tex}
+
+%\input{Issues/issues.tex}
+
+\end{document}
