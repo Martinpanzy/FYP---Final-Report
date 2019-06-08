@@ -5,6 +5,7 @@
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
 
+\usepackage{minted}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{pgfgantt}   
@@ -29,15 +30,26 @@
 \begin{abstract}
 %The abstract is a very brief summary of the report’s contents. Somebody unfamiliar with your project should have a good idea of what it’s about having read the abstract alone and will know whether it will be of interest to them. The abstract should (very concisely) summarise the topic, content and conclusions of the project. Abstracts can vary in length from 50 words up to at most 200 words. They are more concise than executive summaries.
 
-This project
+Robot motion planning based on computer vision is an important topic in the field of AI. While the majority applications allow for relatively large manipulation tolerance, such as pick and place. 
 
-%This report reviews work on motion planning and object detection, examines available vision and robotic hardware for performing shoe lace and hole detection and manipulation, and establishes the criteria for the middleware that will be used for the project. Evaluation criteria are established as a sequence of increasingly difficult shoelace manipulation, starting from passing through a shoe hole, up to fully completing a shoe.
+In this project, I address the precise AI planning and control problem of putting shoelaces on a marked shoe using a bimanual robot, ABB YuMi, and an external camera, ASUS Xtion. Starting with one arm holding one end of the shoelace, YuMi can adjust the orientation of the shoe if necessary, then pass the shoelace through the shoe hole. As an extension, YuMi will also plan sequences of trajectories for completing more holes up to finishing the whole shoe.
+
+The main emphasis of this project is on computing the precise 6D pose of the shoe hole in order to estimate the approaching pose of YuMi’s arm accordingly. The final approach to tackle this problem is by combining random sample consensus (RANSAC) technique and some pre-defined constraints. Other topics including dual arm motion planning, object detection and localization, and accurate offset adjustment are also covered. Every single function, as well as the whole process, is then experimented and evaluated.
 \end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
 % It is usual to thank those individuals who have provided particularly useful assistance, technical or otherwise, during your project. 
 \begin{abstract}
-Thanks mum!
+
+Thanks mum, dad, my family!
+
+Thanks my supervisor, friends, PhDs in Lab and YuMi!
+
+Thanks breakfast, lunch, and dinner!
+
+Thanks gym, sunshine, coffee, movies, and London!
+
+Finally, thanks my brain!
 \end{abstract}
 
 %\hypersetup{linkcolor=black}
@@ -47,16 +59,16 @@ Thanks mum!
 
 %\listoffigures
 %\listoftables
-\setlength{\parskip}{0.5em}
+\setlength{\parskip}{0.7em}
 \input{introduction/introduction.tex}
 \input{background/background.tex}
 \input{RequirementsCap/requirementscap.tex}
 
 % The central part of the report usually consists of three or four chapters detailing the technical work undertaken during the project. 
 \input{AnalysisDesign/analysisdesign.tex}
-\input{Implementation/implement.tex}
-\input{Testing/testing.tex}
-\input{Results/results.tex}
+\input{Implementation/implement_cv.tex}
+\input{Implementation/implement_mp.tex}
+\input{TaR/tar.tex}
 \input{evaluation/Eval.tex}
 \input{conclusion/conclusion.tex}
 \input{Futurework/future.tex}

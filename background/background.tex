@@ -7,8 +7,6 @@ There are three robots available for this project: iCub, Baxter and ABB YuMi.
 
 The \citep{iCub} is a 1-metre tall humanoid robot for research in human cognition and artificial intelligence, which has 53 actuated degrees of freedom across its body. Moreover, it has facial expressions and can establish eye contact with users. However, its joints are relatively weaker than Baxter and YuMi. Considering this project only needs vision and robot arms, iCub is not considered as the best robot.
 
-The \citep{baxter} is a two-armed robot which is 3 feet tall and has a pedestal between 5'10" - 6'3" tall. Each of its arms has 7 degrees of freedom, whose movements are more reliable quicker than iCub. Baxter is usually used for simple industry jobs such as unloading, handing of materials. Considering its size, it is not suitable for this project. 
-
 \begin{figure}[H]
 \centering
 \subfigure[iCub]{\includegraphics[width = 0.32\columnwidth]{background/icub.png}}
@@ -18,6 +16,8 @@ The \citep{baxter} is a two-armed robot which is 3 feet tall and has a pedestal 
 \label{robot}
 \end{figure}
 
+The \citep{baxter} is a two-armed robot which is 3 feet tall and has a pedestal between 5'10" - 6'3" tall. Each of its arms has 7 degrees of freedom, whose movements are more reliable quicker than iCub. Baxter is usually used for simple industry jobs such as unloading, handing of materials. Considering its size, it is not suitable for this project. 
+
 Referring to \citep{ABBsDual5:online}, YuMi is "a collaborative, dual arm, small parts assembly robot that includes flexible hands, parts feeding systems, camera-based part location and state-of-the-art robot control". With 7 degrees of freedom in each arm, it is designed for precise vision-based motion planning and thus is most appropriate to this project.
 
 \section{Motion Planning}
@@ -25,7 +25,17 @@ The purpose of robotic motion planning is to seek the solution of the problem of
 
 \begin{itemize}
     \item \textbf{Work Space:} The physical space where the robot operates.
-    \item \textbf{Configuration/State Space:} The configuration that describes the robot pose. For a solid 3D robot like YuMi, it can perform both rotation and translation. Therefore, a configuration needs 6 parameters: (x, y, z) for translation and (roll, pitch, yaw) for rotation.
+    \item \textbf{Configuration/State Space:} The configuration that describes the robot pose. For a solid 3D robot like YuMi, it can perform both rotation and translation. Therefore, a configuration needs 6 parameters: (x, y, z) for translation and (roll, pitch, yaw) for rotation, whose relationships are shown in Figure \ref{rpy}.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width = 0.5\columnwidth]{background/rpy.jpg}
+\caption{Roll, pitch, yaw rotation related to x, y, z axis}
+\label{rpy}
+\end{figure}
+
+\begin{itemize}
     \item \textbf{Obstacle Space:} The space that robot cannot move to. 
     \item \textbf{Free Space:} The set of configurations of robot that avoids collision with obstacles. In order to test if a configuration is in free space, forward kinematics will firstly be used to calculate the position of robot's geometry, then collision detection will be performed to check if it is collides with environment's geometry.
     \item \textbf{Target Space:} A subspace of free space that consists interested positions we would like the robot to move to. In this project, target space is determined by the camera.
