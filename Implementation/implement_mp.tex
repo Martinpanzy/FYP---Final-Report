@@ -154,7 +154,7 @@ When the orientation of the shoe is ideal, YuMi will start to put the shoe lace 
 
 Recalling the project requirements, before YuMi starts to manipulate the shoelace, one of its grippers is holding it. In this project, the beginning orientation of the shoelace is considered to be the same as that of the gripper. Therefore, to put it into the shoe hole, the orientation (roll, pitch, yaw) of gripper\slash shoelace needs to be aligned with the normal vector of the plane surrounding with shoe hole. As shown in Figure \ref{gripperap}, for the situation when the shoe hole is orienting to its top-left, this direction is represented as the solid orange line. 
 
-When gripper is facing the ground (the orange dash line in Figure \ref{gripperap}), it has 3D rotation (0, $\pi$, $\pi$). Therefore, the alignment can be split into two steps: roll alignment (Figure \ref{roll}) and pitch alignment (Figure \ref{pitch}). There is no need to consider yaw alignment for this step, because the shoelace insertion will not be affected no matter what angle it is. Thus, yaw will be kept as $\pi$.
+When gripper is facing the ground (the orange dash line in Figure \ref{gripperap}), it has 3D rotation $(0, \pi, \pi)$. Therefore, the alignment can be split into two steps: roll alignment (Figure \ref{roll}) and pitch alignment (Figure \ref{pitch}). There is no need to consider yaw alignment for this step, because the shoelace insertion will not be affected no matter what angle it is. Thus, yaw will be kept as $\pi$.
 
 \begin{equation}
 a = \arctan \frac{y - yn}{zn - z}
@@ -168,15 +168,80 @@ b = \arctan \frac{x - xn}{zn - z}
 
 By using Equation \ref{rollcalculation} and \ref{pitchcalculation}, the roll and pitch angles can be computed. Because the shoe is assumed in an ideal pose (orienting to its top-left or top-right), $a$ will be in the interval $[-\frac{\pi}{2}, \frac{\pi}{2}]$ and $b$ always lies in range $[0, \frac{\pi}{2}]$. Recall that the beginning configuration of gripper pitch angle is $\pi$, therefore the finally 3D orientation of YuMi gripper should be $(a, b + \pi, \pi)$. 
 
-So far, the preliminary pre-put pose is $[xn, yn, zn, a, b + \pi, \pi]$ and inserting pose is $[x, y, z, a, b + \pi, \pi]$
+So far, the preliminary pre-put pose is $[xn, yn, zn, a, b + \pi, \pi]$ and the preliminary insertion pose is $[x, y, z, a, b + \pi, \pi]$. However, these poses are not accurate enough for this precision task, whose offsets need to be further adjusted.
 
 \section{Offset Adjustment}
+When letting YuMi's gripper move to a specific 3D location with default orientation $(0, \pi, \pi)$ (facing the ground), the system needs to add $-0.025$ offset on the x-axis ($x\_offset$), $0.005$ offset on the y-axis ($y\_offset$), and $0.145$ offset on the z-axis to achieve relatively precise movement. However, the offset adjustment becomes complicate when considering the gripper's orientation.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width = 0.5\columnwidth]{Implementation/mp/gripperoffset.png}
-\caption{YuMi's gripper design \citep{Productspecification}}
+\includegraphics[width = 0.8\columnwidth]{Implementation/mp/gripperoffset.png}
+\caption{YuMi's gripper design, adopted from \citep{Productspecification}}
 \label{gripperoffset}
 \end{figure}
 
+When planning and moving YuMi's arm(s) by setting pose goals, it is all about the pose of the end-effector. Figure \ref{gripperoffset} shows the design of the YuMi' gripper. It can be discovered that the distance between the endpoint of the gripper and the end-effector is $136mm$. Therefore the offset on z-axis contains $0.136$ gripper offset and $0.009$ system offset ($z\_offset$).
+
+\begin{figure}[H]
+\centering
+\subfigure[X-axis offset due to pitch rotation]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/off3.png}\label{offsetx}}
+\subfigure[Y-axis offset due to roll rotation]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/off2.png}\label{offsety}}
+\subfigure[Z-axis offset due to roll and pitch rotation]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/off1.png}\label{offsetz}}
+\caption{Gripper offset adjustment for top-left case}
+\label{offset}
+\end{figure}
+
+Once the gripper performs rotations, this gripper offset will affect the (x, y, z) location the gripper endpoint reaches. In Figure \ref{offset}, the dark blue dash lines represent gripper offset, the orange dash lines are the corresponding offsets introduced by it. For Figure \ref{offsetx}, if the gripper has a pitch angle of $b$ and the endpoint of the gripper needs to reach the target location, the end-effector only should be at location "End-effector". The same issue occurs for roll rotation as well (see Figure \ref{offsety}). Furthermore, z-axis offset is affected by both of them. To reach the same target location with rotations, the end-effector needs to move down more than that in default orientation. This is because the influence of gripper offset on the z-axis is diluted by the other two axes.
+
+\begin{equation}
+xoff = x\_offset - gripper\_offset*sin(b)
+\label{xoff}
+\end{equation}
+
+\begin{equation}
+yoff = y\_offset - gripper\_offset*sin(a)
+\label{yoff}
+\end{equation}
+
+\begin{equation}
+zoff = gripper\_offset*cos(a)*cos(b) + z\_offset
+\label{zoff}
+\end{equation}
+
+Equation \ref{xoff}, \ref{yoff}, and \ref{zoff} provide the approach to calculate the final offsets. The final pose goals for putting the shoelace into a hole are illustrated in Equation \ref{Preput} and \ref{Insertion}.
+
+\begin{equation}
+Preput\_pose = [xn + xoff, yn + yoff, zn + zoff, a, b + \pi, \pi]
+\label{Preput}
+\end{equation} 
+
+\begin{equation}
+Insertion\_pose = [x + xoff, y + yoff, z + zoff, a, b + \pi, \pi]
+\label{Insertion}
+\end{equation} 
+
+\begin{figure}[H]
+\centering
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\caption{Example of putting shoelace into a target hole}
+\end{figure}
+
 \section{Shoelace Grabbing}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width = 0.6\columnwidth]{Implementation/mp/lacegrab.png}
+\caption{}
+\label{lacegrab}
+\end{figure}
+
+\begin{equation}
+c = \arctan \frac{yp - y}{xp - x}
+\label{yawcalculation}
+\end{equation}
+
+range $[-\frac{\pi}{2}, \frac{\pi}{2}]$
