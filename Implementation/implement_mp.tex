@@ -171,7 +171,7 @@ By using Equation \ref{rollcalculation} and \ref{pitchcalculation}, the roll and
 So far, the preliminary pre-put pose is $[xn, yn, zn, a, b + \pi, \pi]$ and the preliminary insertion pose is $[x, y, z, a, b + \pi, \pi]$. However, these poses are not accurate enough for this precision task, whose offsets need to be further adjusted.
 
 \section{Offset Adjustment}
-When letting YuMi's gripper move to a specific 3D location with default orientation $(0, \pi, \pi)$ (facing the ground), the system needs to add $-0.025$ offset on the x-axis ($x\_offset$), $0.005$ offset on the y-axis ($y\_offset$), and $0.145$ offset on the z-axis to achieve relatively precise movement. However, the offset adjustment becomes complicate when considering the gripper's orientation.
+When letting YuMi's gripper move to a specific 3D location with default orientation $(0, \pi, \pi)$ (facing the ground), the system needs to add $-0.025$ offset on the x-axis ($x\_offset$), $0.005$ offset on the y-axis ($y\_offset$), and $0.145$ offset on the z-axis ($z\_error$) to achieve relatively precise movement. However, the offset adjustment becomes complicate when considering the gripper's orientation.
 
 \begin{figure}[H]
 \centering
@@ -231,17 +231,29 @@ Insertion\_pose = [x + xoff, y + yoff, z + zoff, a, b + \pi, \pi]
 \end{figure}
 
 \section{Shoelace Grabbing}
+After the shoelace being passed through the hole, YuMi should locate this shoelace and pull it out to complete this single hole. The idea to solve this problem is shown in Figure \ref{lacegrab}, where the orange arrow represents the direction in which the shoelace is inserted into the hole. 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width = 0.6\columnwidth]{Implementation/mp/lacegrab.png}
-\caption{}
+\includegraphics[width = 0.5\columnwidth]{Implementation/mp/lacegrab.png}
+\caption{2D Top view that contains the shoe hole position, ideal shoelace pickup position, etc. for top-left case}
 \label{lacegrab}
 \end{figure}
+
+For this example, the orientation of the shoelace is considered to be aligned with this direction. Therefore, when YuMi's gripper is perpendicular to it, YuMi will have the highest probability to complete this task. In other words, the two fingers of the gripper should be at the two orange points respectively, which aligns with orange dash line. In this case, when the gripper closes, the shoelace can be grabbed. 
+
+The parameter that controls the rotation on the z-axis is yaw rotation. When YuMi's fingers are at two blue points in Figure \ref{lacegrab}, the yaw rotation is $\frac{\pi}{2}$. Thus, there is an angle $c$ needs to be added, which can be calculated according to Equation \ref{yawcalculation}.
 
 \begin{equation}
 c = \arctan \frac{yp - y}{xp - x}
 \label{yawcalculation}
 \end{equation}
 
-range $[-\frac{\pi}{2}, \frac{\pi}{2}]$
+Considering both top-left and top-right cases, the available range of $c$ is $[-\frac{\pi}{2}, \frac{\pi}{2}]$. When this condition is satisfied, the final grabbing pose can be written as Equation \ref{grabpose}.
+
+\begin{equation}
+Grabbing\_pose = [xp + x\_offset, yp + y\_offset, zp + z\_error, 0, \pi, c + \frac{\pi}{2} - 0.26]
+\label{grabpose}
+\end{equation}
+
+Notice that the offset for 3D location is different form that of $Prepur\_pose$ and $Insertion\_pose$. This is because this time the gripper does not have any roll and pitch rotations from its default orientation. In addition, $-0.26$ is added to yaw rotation by taking into account of the !!!!!!!!!!!!!!!!
