@@ -1,6 +1,6 @@
 \chapter{Implementation - Motion Planning}
 
-The entire code for this part can be seen in !!!!!!!!!!
+This chapter will cover the implementation methods on motion planning side of this project. The entire code for this part can be seen in !!!!!!!!!!
 
 \section{MoveIt! Interface and Planning Scene Setup}
 As mentioned in Background Chapter, the motion planning part will utilize MoveIt!. The $moveit\_commander$ namespace is imported in order to use Python MoveIt! interface. This namespace contains a $RobotCommander$ class, a $MoveGroupCommander$ class, and a $PlanningSceneInterface$ class.
@@ -87,7 +87,7 @@ def plan_and_move_dual(target_l, target_r):
 \subfigure[cal]{\includegraphics[width = 0.32\columnwidth]{images/ph.png}}
 \subfigure[home]{\includegraphics[width = 0.32\columnwidth]{images/ph.png}}
 \subfigure[initial]{\includegraphics[width = 0.32\columnwidth]{images/ph.png}}
-\caption{Safety positions of YuMi}
+\caption{Safe positions of YuMi}
 \label{safeposition}
 \end{figure}
 
@@ -249,11 +249,28 @@ c = \arctan \frac{yp - y}{xp - x}
 \label{yawcalculation}
 \end{equation}
 
-Considering both top-left and top-right cases, the available range of $c$ is $[-\frac{\pi}{2}, \frac{\pi}{2}]$. When this condition is satisfied, the final grabbing pose can be written as Equation \ref{grabpose}.
+Considering both top-left and top-right cases, the available range of $c$ is $[-\frac{\pi}{2}, \frac{\pi}{2}]$. When this condition is satisfied, the final grabbing pose can be written as Equation \ref{grabpose}. The pre-grabbing pose is same as the grabbing pose except its $z$ value is a little bit higher, which allows !!!!!!!!!!
 
 \begin{equation}
 Grabbing\_pose = [xp + x\_offset, yp + y\_offset, zp + z\_error, 0, \pi, c + \frac{\pi}{2} - 0.26]
 \label{grabpose}
 \end{equation}
 
-Notice that the offset for 3D location is different form that of $Prepur\_pose$ and $Insertion\_pose$. This is because this time the gripper does not have any roll and pitch rotations from its default orientation. In addition, $-0.26$ is added to yaw rotation by taking into account of the !!!!!!!!!!!!!!!!
+Notice that, here, the offset for 3D location is different form that of $Prepur\_pose$ and $Insertion\_pose$. This is because this time the gripper does not perform any roll and pitch rotations from its default orientation. In addition, $-0.26$ is added to yaw rotation by taking into account of the !!!!!!!!!!!!!!!!
+
+\begin{figure}[H]
+\centering
+\includegraphics[width = 0.3\columnwidth]{images/ph.png}
+\caption{0.26}
+\label{0.26}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
+\caption{Example of pulling shoelace out}
+\end{figure}
