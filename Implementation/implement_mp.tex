@@ -15,17 +15,17 @@ To plan and execute motions on the YuMi, $MoveGroupCommander$ objects need to be
 \begin{tabular}{||c|c|c|c||}
 \hline
 Pose reference frame & Allow re-planning & Goal position tolerance & Goal orientation tolerance \\ \hline\hline
-$yumi\_body$ & False & 0.005 & 0.005 \\ \hline
+$yumi\_base\_link$ & False & 0.005 & 0.005 \\ \hline
 \end{tabular}}
 \caption{Settings of three $MoveGroupCommander$ objects}
 \label{armsetup}
 \end{table}
 
-Moreover, a $PlanningSceneInterface$ object is instantiated, which is an interface to the world surrounding the robot. In this case, I defined the 3D position and 3D dimension of the workbench in front of YuMi. By doing this, the workbench will be regarded as an obstacle to YuMi, so that the potential collisions between YuMi's arm(s) and the workbench can be avoided. However, the external cameras are not defined due to high measurement difficulty, by setting some safe positions for YuMi, the collisions can also be avoided. The details are discussed in Section \ref{safetyposescalculation}.
+Moreover, a $PlanningSceneInterface$ object is instantiated, which is an interface to the world surrounding the robot. In this case, I defined the 3D position and 3D dimension of the workbench in front of YuMi, as shown in Figure \ref{scene}. By doing this, the workbench will be regarded as an obstacle to YuMi, so that the potential collisions between YuMi's arm(s) and the workbench can be avoided. However, the external cameras are not defined due to high measurement difficulty, by setting some safe positions for YuMi, the collisions can also be avoided. The details are discussed in Section \ref{safetyposescalculation}.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width = 0.5\columnwidth]{images/ph.png}
+\includegraphics[width = 0.5\columnwidth]{Implementation/mp/planningscene.png}
 \caption{The planning scene}
 \label{scene}
 \end{figure}
@@ -38,7 +38,9 @@ display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path
 
 
 \section{Movement Control}
-The opening and closing of YuMi' gripper(s) depend on the gripper effort value, which needs to be set between $-20$ to $20$. The gripper will open when the value is negative and close when it is positive. By publishing the effort value of specific gripper to its corresponding topic, $/yumi/gripper\_r\_effort\_cmd$ for right gripper, or $/yumi/gripper\_l\_effort\_cmd$ for left gripper, the gripper control function can be achieved. (Whether the command is to open or close, the effort value will eventually set to 0 in order to relax the effort, which will not change the gripper state.)
+The opening and closing of YuMi' gripper(s) depend on the gripper effort value, which needs to be set between $-20$ to $20$. The gripper will open when the value is negative and close when it is positive. By publishing the effort value of specific gripper to its corresponding topic, $/yumi/gripper\_r\_effort\_cmd$ for right gripper, or $/yumi/gripper\_l\_effort\_cmd$ for left gripper, the gripper control function can be achieved. 
+
+%(Whether the command is to open or close, the effort value will eventually set to 0 in order to relax the effort, which will not change the gripper state.)
 
 As for YuMi's arm(s) control, it can be implemented in two ways: setting a joint goal or setting a pose goal.
 
@@ -61,7 +63,7 @@ As for YuMi's arm(s) control, it can be implemented in two ways: setting a joint
     This method is used throughout the manipulation process including adjusting shoe pose, putting the lace through shoe hole, and grabbing the shoelace etc.
 \end{itemize}
 
-For single arm manipulation, letting the end-effector move to a pose goal can be achieved in two ways. Either using $compute\_cartesian\_path$ or $set\_pose\_target$ function. For a given pose goal, the former method will be tried first, and if it fails, the later one will be used. The $compute\_cartesian\_path$ function computes a Cartesian path that follows specified waypoints (6D poses). The maximum resulting step size between the end-effector configurations of consecutive points in the result trajectory is predefined, which is 0.01 and provides a resolution of $1$ cm. Collision and kinematic will be checked and if these constraints cannot be met, the function will return a fraction of the path achieved between $0$ and $1$. If successful, fraction will equal to $1$.
+For single arm manipulation, letting the end-effector move to a pose goal can be achieved in two ways. Either using $compute\_cartesian\_path$ or $set\_pose\_target$ function. For a given pose goal, the former method will be tried first, and if it fails, the later one will be used. The $compute\_cartesian\_path$ function computes a Cartesian path that follows specified waypoints (6D poses). The maximum resulting step size between the end-effector configurations of consecutive points in the result trajectory is predefined, which is 0.01 that provides a resolution of $1$ cm. Collision and kinematic will be checked and if these constraints cannot be met, the function will return a fraction of the path achieved between $0$ and $1$. If successful, fraction will equal to $1$.
 
 \begin{minted}[frame=single, framesep=1.5mm, baselinestretch=1, fontsize=\footnotesize, linenos, breaklines]{python}
 (plan, fraction) = cur_arm.compute_cartesian_path(waypoints, 0.01, 0.0, True)
@@ -84,9 +86,9 @@ def plan_and_move_dual(target_l, target_r):
 
 \begin{figure}[H]
 \centering
-\subfigure[cal]{\includegraphics[width = 0.32\columnwidth]{images/ph.png}}
-\subfigure[home]{\includegraphics[width = 0.32\columnwidth]{images/ph.png}}
-\subfigure[initial]{\includegraphics[width = 0.32\columnwidth]{images/ph.png}}
+\subfigure[Cal pose]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/calpose.png}}
+\subfigure[Home pose]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/homepose.png}}
+\subfigure[Initial pose]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/initialpose.png}}
 \caption{Safe positions of YuMi}
 \label{safeposition}
 \end{figure}
@@ -103,46 +105,38 @@ elif (arm == BOTH):
 \end{minted}
 
 \section{Shoe Pose Adjustment} \label{adj}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width = 0.5\columnwidth]{images/ph.png}
-\caption{Shoe pose adjustment 2d ppt flow chart!!!}
-\label{adjust}
-\end{figure}
-
-As mentioned in Section \ref{shoedetection}, if the shoe is vertically placed, then its orientation needs to be adjusted. The idea is illustrated in Figure \ref{adjust}, in which YuMi will use both arms. These waypoints in the adjustment process are computed using the same approach as the shoe hole (Section \ref{3dlocationestimation}), by converting the 2D pixel positions around the shoe ($adr$, $adrr$, $adl$, $adll$) to the real-world coordinates, then utilizing $TF$ to obtain the location referenced to $yumi\_body$ frame using $lookupTransform$ function. Following is the example applied on location $adr$.
+As mentioned in Section \ref{shoeadjust}, if the shoe is vertically placed, then its orientation needs to be adjusted. Recall the idea illustrated in Figure \ref{adjustmentidea}, in which YuMi will use both arms. In Section \ref{shoeadjust}, the real-world locations of $adr$, $adrr$, $adl$, $adll$ have already been computed and published to $TF$.
+Here, their locations referenced to YuMi frame $yumi\_base\_link$ can be calculated using $lookupTransform$ function. Following is the example applied on location $adr$.
 
 \begin{minted}[frame=single, framesep=1.5mm, baselinestretch=1, fontsize=\footnotesize, linenos, breaklines]{python}
-(trans_adr,_) = self._tfsub.lookupTransform('/yumi_body', '/adr', rospy.Time(0))
+(trans_adr,_) = self._tfsub.lookupTransform('/yumi_base_link', '/adr', rospy.Time(0))
 \end{minted}
 
-The output $trans\_adr$ is the 3D location I want, !!!!! the pose !!!!!1
-
-by firstly moving YuMi end-effectors to these pre-adjustment positions with  !!!!! angle. Then both arms will following the arrows and move towards the middle. After adjustment, they will return to the pre-adjustment positions and move back to cal positions.
+The output $trans\_adr$ is the 3D location (x, y, z) of a waypoint. However, the z location and 3D rotation of $adr$ will not be used because they can be pre-defined before the adjustment process. The z coordinate is set as $0.1$ and the rotation is $[-\frac{\pi}{4}, \pi, \pi]$ for left gripper and $[\frac{\pi}{4}, \pi, \pi]$ for right gripper in order to provide the best Angle of application. Figure \ref{realadjust} shows the real adjustment process, where YuMi will start from Cal pose then move to Home pose before goes to (a), and return to Home and finally back to Cal pose after (e). The detailed waypoints for this process can be found in Table \ref{adjustwaypoints}.
 
 \begin{figure}[H]
 \centering
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\caption{Example of real shoe pose adjustment process}
+\subfigure[Move to pre-adjust]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj2.png}}
+\subfigure[Move down to adr and adl]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj3.png}}
+\subfigure[Move to adrr and adll]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj4.png}}
+\subfigure[Move back to adr and adl]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj5.png}}
+\subfigure[Move up to post-adjust]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj6.png}}
+\caption{The example motion process of shoe pose adjustment}
+\label{realadjust}
 \end{figure}
 
-Figure \ref{preposeadjust} shows the detected shoe hole before and after adjustment, the later gives a much more accurate results. Figure \ref{shoeposerange} illustrates the ideal orientation range of the shoe hole after adjustment. The hole should face towards the camera, either to its top-left or top-right.
+Figure \ref{preposeadjust} shows the detected shoe hole before and after adjustment, the later gives a much more accurate results. Figure \ref{shoeposerange} illustrates the possible orientation range of the shoe hole after adjustment. The hole will face towards the camera, either to hole's top-left or top-right.
 
 \begin{figure}[H]
 \centering
-\subfigure[Detected shoe hole before and after adjustment]{\includegraphics[width = 0.3\columnwidth]{images/ph.png} \label{preposeadjust}}
-\subfigure[Ideal orientation range of shoe hole]{\includegraphics[width = 0.3\columnwidth]{images/ph.png} \label{shoeposerange}}
-\caption{}
+\subfigure[Detected shoe hole before and after adjustment]{\includegraphics[height = 7.5cm, keepaspectratio]{Implementation/mp/shoebaadj.png} \label{preposeadjust}}
+\subfigure[Ideal orientation range of shoe hole]{\includegraphics[height = 7.5cm, keepaspectratio]{Implementation/mp/toplefttopright.png} \label{shoeposerange}}
+\caption{Adjustment results}
 \end{figure}
 
 
 \section{Robot Gripper Approaching Pose}
-When the orientation of the shoe is ideal, YuMi will start to put the shoe lace into the hole by using the computed $shoe\_hole$ and $pre\_put$ information. Same as the method used in previous section, these two locations are firstly transformed to $yumi\_body$ frame, which gives the coordinates of (xn, yn, zn) and (x, y, z). 
+When the orientation of the shoe is ideal, YuMi will start to put the shoe lace into the hole by using the computed $shoe\_hole$ and $pre\_put$ information. Same as the method used in previous section, these two locations are firstly transformed to $yumi\_base\_link$ frame, which gives the coordinates of (xn, yn, zn) and (x, y, z).
 
 \begin{figure}[H]
 \centering
@@ -154,7 +148,7 @@ When the orientation of the shoe is ideal, YuMi will start to put the shoe lace 
 
 Recalling the project requirements, before YuMi starts to manipulate the shoelace, one of its grippers is holding it. In this project, the beginning orientation of the shoelace is considered to be the same as that of the gripper. Therefore, to put it into the shoe hole, the orientation (roll, pitch, yaw) of gripper\slash shoelace needs to be aligned with the normal vector of the plane surrounding with shoe hole. As shown in Figure \ref{gripperap}, for the situation when the shoe hole is orienting to its top-left, this direction is represented as the solid orange line. 
 
-When gripper is facing the ground (the orange dash line in Figure \ref{gripperap}), it has 3D rotation $(0, \pi, \pi)$. Therefore, the alignment can be split into two steps: roll alignment (Figure \ref{roll}) and pitch alignment (Figure \ref{pitch}). There is no need to consider yaw alignment for this step, because the shoelace insertion will not be affected no matter what angle it is. Thus, yaw will be kept as $\pi$.
+When gripper is facing the ground (the vertical orange dash line in Figure \ref{gripperap}), it has 3D rotation $(0, \pi, \pi)$. Therefore, the alignment can be split into two steps: roll alignment (Figure \ref{roll}) and pitch alignment (Figure \ref{pitch}). There is no need to consider yaw alignment for this step, because the shoelace insertion will not be affected no matter what angle it is. Thus, yaw will be kept as $\pi$.
 
 \begin{equation}
 a = \arctan \frac{y - yn}{zn - z}
@@ -191,7 +185,7 @@ When planning and moving YuMi's arm(s) by setting pose goals, it is all about th
 \label{offset}
 \end{figure}
 
-Once the gripper performs rotations, this gripper offset will affect the (x, y, z) location the gripper endpoint reaches. In Figure \ref{offset}, the dark blue dash lines represent gripper offset, the orange dash lines are the corresponding offsets introduced by it. For Figure \ref{offsetx}, if the gripper has a pitch angle of $b$ and the endpoint of the gripper needs to reach the target location, the end-effector only should be at location "End-effector". The same issue occurs for roll rotation as well (see Figure \ref{offsety}). Furthermore, z-axis offset is affected by both of them. To reach the same target location with rotations, the end-effector needs to move down more than that in default orientation. This is because the influence of gripper offset on the z-axis is diluted by the other two axes.
+Once the gripper performs rotations, this gripper offset will affect the (x, y, z) location the gripper endpoint reaches. In Figure \ref{offset}, the dark blue dash lines represent gripper offset 0.136, the orange dash lines are the corresponding offsets introduced by it. For Figure \ref{offsetx}, if the gripper has a pitch angle of $b$ and the endpoint of the gripper needs to reach the target location, the end-effector only should be at location "End-effector". The same issue occurs for roll rotation as well (see Figure \ref{offsety}). Furthermore, z-axis offset is affected by both of them. To reach the same target location with rotations, the end-effector needs to move down more than that in default orientation. This is because the influence of gripper offset on the z-axis is diluted by the other two axes.
 
 \begin{equation}
 xoff = x\_offset - gripper\_offset*sin(b)
@@ -220,18 +214,29 @@ Insertion\_pose = [x + xoff, y + yoff, z + zoff, a, b + \pi, \pi]
 \label{Insertion}
 \end{equation} 
 
+Figure \ref{putexample} shows the insertion process, where YuMi will start from Cal pose then move to (a), and back to Cal pose after finishing the task.
+
 \begin{figure}[H]
 \centering
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\caption{Example of putting shoelace into a target hole}
+\subfigure[Move to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put1.png}}
+\subfigure[Move to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put2.png}}
+\subfigure[Move to shoe\_hole]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put3.png}}
+\subfigure[Move back to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put4.png}}
+\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put5.png}}
+\caption{The example motion process of inserting shoelace into a target hole}
+\label{putexample}
 \end{figure}
 
 \section{Shoelace Grabbing}
 After the shoelace being passed through the hole, YuMi should locate this shoelace and pull it out to complete this single hole. The idea to solve this problem is shown in Figure \ref{lacegrab}, where the orange arrow represents the direction in which the shoelace is inserted into the hole. 
+
+\begin{figure}[H]
+\centering
+\subfigure[Real-world shoe placement]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dposw.png}}
+\subfigure[The frame relationships in Rviz]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/pickrviz.png}}
+\caption{Example of shoe lace pose estimation using ZED Mini.}
+\end{figure}
+
 
 \begin{figure}[H]
 \centering
@@ -242,7 +247,7 @@ After the shoelace being passed through the hole, YuMi should locate this shoela
 
 For this example, the orientation of the shoelace is considered to be aligned with this direction. Therefore, when YuMi's gripper is perpendicular to it, YuMi will have the highest probability to complete this task. In other words, the two fingers of the gripper should be at the two orange points respectively, which aligns with orange dash line. In this case, when the gripper closes, the shoelace can be grabbed. 
 
-The parameter that controls the rotation on the z-axis is yaw rotation. When YuMi's fingers are at two blue points in Figure \ref{lacegrab}, the yaw rotation is $\frac{\pi}{2}$. Thus, there is an angle $c$ needs to be added, which can be calculated according to Equation \ref{yawcalculation}.
+The parameter that controls the rotation of the gripper on the z-axis is yaw. When YuMi's fingers are at two blue points in Figure \ref{lacegrab}, the yaw rotation is $\frac{\pi}{2}$. Thus, there is an angle $c$ needs to be added, which can be calculated according to Equation \ref{yawcalculation}.
 
 \begin{equation}
 c = \arctan \frac{yp - y}{xp - x}
@@ -252,11 +257,11 @@ c = \arctan \frac{yp - y}{xp - x}
 Considering both top-left and top-right cases, the available range of $c$ is $[-\frac{\pi}{2}, \frac{\pi}{2}]$. When this condition is satisfied, the final grabbing pose can be written as Equation \ref{grabpose}. The pre-grabbing pose is same as the grabbing pose except its $z$ value is a little bit higher, which allows !!!!!!!!!!
 
 \begin{equation}
-Grabbing\_pose = [xp + x\_offset, yp + y\_offset, zp + z\_error, 0, \pi, c + \frac{\pi}{2} - 0.26]
+Grabbing\_pose = [xp + x\_offset, yp + y\_offset, zp + z\_error, 0, \pi, c + \frac{\pi}{2} - 0.1]
 \label{grabpose}
 \end{equation}
 
-Notice that, here, the offset for 3D location is different form that of $Prepur\_pose$ and $Insertion\_pose$. This is because this time the gripper does not perform any roll and pitch rotations from its default orientation. In addition, $-0.26$ is added to yaw rotation by taking into account of the !!!!!!!!!!!!!!!!
+Notice that, here, the offset for 3D location is different form that of $Prepur\_pose$ and $Insertion\_pose$. This is because this time the gripper does not perform any roll and pitch rotations from its default orientation. In addition, $-0.1$ is added to yaw rotation by taking into account of the !!!!!!!!!!!!!!!!
 
 \begin{figure}[H]
 \centering
@@ -267,10 +272,10 @@ Notice that, here, the offset for 3D location is different form that of $Prepur\
 
 \begin{figure}[H]
 \centering
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{images/ph.png}}
-\caption{Example of pulling shoelace out}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull1.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull2.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull3.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull4.png}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull5.png}}
+\caption{The example motion process of pulling shoelace out}
 \end{figure}
