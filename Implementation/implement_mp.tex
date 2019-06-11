@@ -218,9 +218,9 @@ Figure \ref{putexample} shows the insertion process, where YuMi will start from 
 
 \begin{figure}[H]
 \centering
-\subfigure[Move to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put1.png}}
+\subfigure[Move to initial pose, and attach shoelace manually]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put1.png}}
 \subfigure[Move to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put2.png}}
-\subfigure[Move to shoe\_hole]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put3.png}}
+\subfigure[Move to shoe\_hole and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put3.png}}
 \subfigure[Move back to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put4.png}}
 \subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put5.png}}
 \caption{The example motion process of inserting shoelace into a target hole}
@@ -228,15 +228,16 @@ Figure \ref{putexample} shows the insertion process, where YuMi will start from 
 \end{figure}
 
 \section{Shoelace Grabbing}
-After the shoelace being passed through the hole, YuMi should locate this shoelace and pull it out to complete this single hole. The idea to solve this problem is shown in Figure \ref{lacegrab}, where the orange arrow represents the direction in which the shoelace is inserted into the hole. 
+After the shoelace being passed through the hole, YuMi should locate this shoelace and pull it out to complete this single hole. Since the endpoint of a shoelace is straight, the orientation of the shoelace is considered to be aligned with this direction. Therefore, the approximately location of shoelace can be computed using the normal vector calculated in Section \ref{3DOrientationofShoeHole}. Given the normal vector $n = Ai + Bj + Ck$, the grab location is set as $(0.05*A, 0.05*B, 0.05*C)$ referenced to $shoe\_hole$, where $0.05$ is used to define the distance. Figure \ref{pick} shows the related frames in Rviz, where $pre\_put$, $shoe\_hole$, and $pick$ are on the same normal vector. Here, the $pick$ will be transformed to $yumi\_base\_link$ frame as well, which gives the coordinate $(xp, yp, zp)$.
 
 \begin{figure}[H]
 \centering
 \subfigure[Real-world shoe placement]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dposw.png}}
-\subfigure[The frame relationships in Rviz]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/pickrviz.png}}
+\subfigure[The frame relationships in Rviz]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/pickrviz.png}\label{pick}}
 \caption{Example of shoe lace pose estimation using ZED Mini.}
 \end{figure}
 
+The idea to solve this problem is shown in Figure \ref{lacegrab}, where the orange arrow represents the direction in which the shoelace is inserted into the hole.
 
 \begin{figure}[H]
 \centering
@@ -245,7 +246,7 @@ After the shoelace being passed through the hole, YuMi should locate this shoela
 \label{lacegrab}
 \end{figure}
 
-For this example, the orientation of the shoelace is considered to be aligned with this direction. Therefore, when YuMi's gripper is perpendicular to it, YuMi will have the highest probability to complete this task. In other words, the two fingers of the gripper should be at the two orange points respectively, which aligns with orange dash line. In this case, when the gripper closes, the shoelace can be grabbed. 
+Therefore, when YuMi's gripper is perpendicular to it, YuMi will have the highest probability to complete this task. In other words, the two fingers of the gripper should be at the two orange points respectively, which aligns with orange dash line. In this case, when the gripper closes, the shoelace can be grabbed. 
 
 The parameter that controls the rotation of the gripper on the z-axis is yaw. When YuMi's fingers are at two blue points in Figure \ref{lacegrab}, the yaw rotation is $\frac{\pi}{2}$. Thus, there is an angle $c$ needs to be added, which can be calculated according to Equation \ref{yawcalculation}.
 
@@ -254,28 +255,24 @@ c = \arctan \frac{yp - y}{xp - x}
 \label{yawcalculation}
 \end{equation}
 
-Considering both top-left and top-right cases, the available range of $c$ is $[-\frac{\pi}{2}, \frac{\pi}{2}]$. When this condition is satisfied, the final grabbing pose can be written as Equation \ref{grabpose}. The pre-grabbing pose is same as the grabbing pose except its $z$ value is a little bit higher, which allows !!!!!!!!!!
+Considering both top-left and top-right cases, the available range of $c$ is $[-\frac{\pi}{2}, \frac{\pi}{2}]$. When this condition is satisfied, the final grabbing pose can be written as Equation \ref{grabpose}. Notice that, here, the offset for 3D location is different form that of $Preput\_pose$ and $Insertion\_pose$. This is because this time the gripper does not perform any roll and pitch rotations from its default orientation.
 
 \begin{equation}
 Grabbing\_pose = [xp + x\_offset, yp + y\_offset, zp + z\_error, 0, \pi, c + \frac{\pi}{2} - 0.1]
 \label{grabpose}
 \end{equation}
 
-Notice that, here, the offset for 3D location is different form that of $Prepur\_pose$ and $Insertion\_pose$. This is because this time the gripper does not perform any roll and pitch rotations from its default orientation. In addition, $-0.1$ is added to yaw rotation by taking into account of the !!!!!!!!!!!!!!!!
+In addition, $-0.1$ is added to yaw rotation. This angle adjustment prevents gripper from getting stuck on the sides of the shoe. The pre-grabbing pose is same as the grabbing pose except its $z$ value is a $0.08m$ higher, which allows the gripper to approach the shoelace more safely.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width = 0.3\columnwidth]{images/ph.png}
-\caption{0.26}
-\label{0.26}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull1.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull2.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull3.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull4.png}}
-\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull5.png}}
+\subfigure[Move to home pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull1.png}}
+\subfigure[Move to pre-grabbing and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull2.png}}
+\subfigure[Move to grabbing\_pose and close the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull3.png}}
+\subfigure[Move back to pre-grabbing]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull4.png}}
+\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull5.png}}
 \caption{The example motion process of pulling shoelace out}
+\label{pickexample}
 \end{figure}
+
+Figure \ref{pickexample} displays the grasp process, where YuMi will use its left arm. It starts from Cal pose, then moves to (a) Home pose before executing. After finishing the task, it will return to Initial pose (e) and finally back to Cal pose.

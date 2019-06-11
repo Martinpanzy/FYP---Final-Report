@@ -194,7 +194,7 @@ The contour(s) of blue area(s) are then calculated. If at least one contour is d
 
 Once the 2D pixel position is computed, same approach as in Section \ref{shoeadjust} will be used to obtain its 3D real-world location $shoe\_hole$ referenced to camera frame. Related code can be found in !!!!!!. To improve its stability, 10 readings of $shoe\_hole$ will be recorded and averaged before publishing to $TF$. Figure \ref{3dpos} is the example visualized in Rviz.
 
-\section{3D Orientation of Shoe Hole}
+\section{3D Orientation of Shoe Hole} \label{3DOrientationofShoeHole}
 Due to the fact that the surrounding area of the shoe hole can be regarded as a plane, as shown in Figure \ref{plane}, its 3D orientation is the same as that of the plane. In addition, the orientation of a plane can be obtained from its plane equation. For a plane $Ax + By + Cz = D$, its normal vector is $n = Ai + Bj + Ck$.
 
 To achieve the shoelace insertion task, a pre-insertion point called $pre\_put$ need to be defined along the normal vector direction. With this, YuMi will move its gripper to this location, then align the gripper with the normal vector, and finally move to $shoe\_hole$. After insertion, it will follow the previous path and return to $pre\_put$.
@@ -206,7 +206,7 @@ To achieve the shoelace insertion task, a pre-insertion point called $pre\_put$ 
 \label{plane}
 \end{figure}
 
-As mentioned in Background Chapter, by extracting all the surrounding point clouds of the shoe hole, RANSAC can then be applied to estimate the plane parameters A, B, C, and D, while ignoring the outliers. Here, the reasonable surrounding area is the contour area detected in Section \ref{3dlocationestimation}. In other words, it consists of all the white points in the final mask image shown in Figure \ref{zedfilter}. Taking these points as input, following settings are used for RANSAC. Notice that the number of hypothetical inliers is different for these two cameras due to their different resolutions.
+As mentioned in Background Chapter, by extracting all the surrounding point clouds of the shoe hole, RANSAC can then be applied to estimate the plane parameters A, B, C, and D, while ignoring the outliers. Here, the reasonable surrounding area is the contour area detected in Section \ref{3dlocationestimation}. In other words, it consists of all the white points in the final mask image shown in Figure \ref{zedfilter}. For ASUS Xtion camera, these points need to be converted to YuMi's axis format as before. Taking these points as input, following settings are used for RANSAC. Notice that the number of hypothetical inliers is different for these two cameras due to their different resolutions.
 
 \begin{table}[H]
 \centering
