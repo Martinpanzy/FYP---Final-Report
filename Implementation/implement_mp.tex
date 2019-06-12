@@ -86,9 +86,9 @@ def plan_and_move_dual(target_l, target_r):
 
 \begin{figure}[H]
 \centering
-\subfigure[Cal pose]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/calpose.png}}
-\subfigure[Home pose]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/homepose.png}}
-\subfigure[Initial pose]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/initialpose.png}}
+\subfigure[Cal pose]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/calpose.jpg}}
+\subfigure[Home pose]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/homepose.jpg}}
+\subfigure[Initial pose]{\includegraphics[width = 0.32\columnwidth]{Implementation/mp/initialpose.jpg}}
 \caption{Safe positions of YuMi}
 \label{safeposition}
 \end{figure}
@@ -116,11 +116,11 @@ The output $trans\_adr$ is the 3D location (x, y, z) of a waypoint. However, the
 
 \begin{figure}[H]
 \centering
-\subfigure[Move to pre-adjust]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj2.png}}
-\subfigure[Move down to adr and adl]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj3.png}}
-\subfigure[Move to adrr and adll]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj4.png}}
-\subfigure[Move back to adr and adl]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj5.png}}
-\subfigure[Move up to post-adjust]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj6.png}}
+\subfigure[Move to pre-adjust]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj2.jpg}}
+\subfigure[Move down to adr and adl]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj3.jpg}}
+\subfigure[Move to adrr and adll]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj4.jpg}}
+\subfigure[Move back to adr and adl]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj5.jpg}}
+\subfigure[Move up to post-adjust]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/adj6.jpg}}
 \caption{The example motion process of shoe pose adjustment}
 \label{realadjust}
 \end{figure}
@@ -130,7 +130,7 @@ Figure \ref{preposeadjust} shows the detected shoe hole before and after adjustm
 \begin{figure}[H]
 \centering
 \subfigure[Detected shoe hole before and after adjustment]{\includegraphics[height = 7.5cm, keepaspectratio]{Implementation/mp/shoebaadj.png} \label{preposeadjust}}
-\subfigure[Ideal orientation range of shoe hole]{\includegraphics[height = 7.5cm, keepaspectratio]{Implementation/mp/toplefttopright.png} \label{shoeposerange}}
+\subfigure[Ideal orientation range of shoe hole]{\includegraphics[height = 7.5cm, keepaspectratio]{Implementation/mp/toplefttopright.jpg} \label{shoeposerange}}
 \caption{Adjustment results}
 \end{figure}
 
@@ -218,11 +218,11 @@ Figure \ref{putexample} shows the insertion process, where YuMi will start from 
 
 \begin{figure}[H]
 \centering
-\subfigure[Move to initial pose, and attach shoelace manually]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put1.png}}
-\subfigure[Move to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put2.png}}
-\subfigure[Move to shoe\_hole and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put3.png}}
-\subfigure[Move back to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put4.png}}
-\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put5.png}}
+\subfigure[Move to initial pose, and attach shoelace manually]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put1.jpg}}
+\subfigure[Move to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put2.jpg}}
+\subfigure[Move to shoe\_hole and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put3.jpg}}
+\subfigure[Move back to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put4.jpg}}
+\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put5.jpg}}
 \caption{The example motion process of inserting shoelace into a target hole}
 \label{putexample}
 \end{figure}
@@ -232,8 +232,8 @@ After the shoelace being passed through the hole, YuMi should locate this shoela
 
 \begin{figure}[H]
 \centering
-\subfigure[Real-world shoe placement]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dposw.png}}
-\subfigure[The frame relationships in Rviz]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/pickrviz.png}\label{pick}}
+\subfigure[Real-world shoe placement]{\includegraphics[height=7cm,keepaspectratio]{Implementation/cv/3dposw.jpg}}
+\subfigure[The frame relationships in Rviz]{\includegraphics[height=7cm,keepaspectratio]{Implementation/cv/pickrviz.png}\label{pick}}
 \caption{Example of shoe lace pose estimation using ZED Mini.}
 \end{figure}
 
@@ -266,11 +266,11 @@ In addition, $-0.1$ is added to yaw rotation. This angle adjustment prevents gri
 
 \begin{figure}[H]
 \centering
-\subfigure[Move to home pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull1.png}}
-\subfigure[Move to pre-grabbing and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull2.png}}
-\subfigure[Move to grabbing\_pose and close the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull3.png}}
-\subfigure[Move back to pre-grabbing]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull4.png}}
-\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull5.png}}
+\subfigure[Move to home pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull1.jpg}}
+\subfigure[Move to pre-grabbing and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull2.jpg}}
+\subfigure[Move to grabbing\_pose and close the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull3.jpg}}
+\subfigure[Move back to pre-grabbing]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull4.jpg}}
+\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull5.jpg}}
 \caption{The example motion process of pulling shoelace out}
 \label{pickexample}
 \end{figure}

@@ -1,18 +1,49 @@
 \chapter{Testing and Results}
 
-The testing is carried out in 
+In order to examine the performance and robustness of my approach, a serious of experiments target both individual functions and the integrated system has been conducted. The success rate and execution times are the two evaluation criteria.
 
-\section{Independent functions}
+In all experiments, I utilize the same platform as shown in Figure \ref{5.1}. It consists of a YuMi robot and an external camera (ZED Mini or ASUS Xtion). The marked shoe will be placed on the workbench within the area YuMi can reach. All tests were conducted under normal lighting conditions. 
 
-shoe detection
+\section{Shoe Detection and Pose Estimation}
+The purpose of this part experiment is to assess the robustness of object detection and if the system can correctly compute adjustment locations or the centroid of the shoe hole.
 
-shoe hole tracking 
+The marked shoe will be placed at random location on the workbench for 10 times. For each location, I rotate the shoe 5 times to adjust its orientation. YOLO algorithm will be used to perform shoe detection and return the prediction probability and the bounding box. Its performance is illustrated in Table \ref{yolotest}.
 
-shoe pose adjustment
+\begin{table}[H]
+\centering
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{||c||c|c|c|c|c||}
+\hline
+ & \begin{tabular}[c]{@{}c@{}}Average \\ execution time\end{tabular} & Success rate & \begin{tabular}[c]{@{}c@{}}Average\\ probability\end{tabular} & \begin{tabular}[c]{@{}c@{}}Minimum \\ probability\end{tabular} & \begin{tabular}[c]{@{}c@{}}Maximum \\ probability\end{tabular} \\ \hline \hline
+Shoe detection & ms & /50 & 0.7 & 0.41 & 0.95 \\ \hline
+\end{tabular}}
+\caption{}
+\label{yolotest}
+\end{table}
 
-(approaching pose)
+Once YOLO detects a shoe, the following two situations will occur. When the shoe is vertically placed, the algorithm should publish the required four adjustment locations ($adr$, $adrr$, $adl$, and $adll$) to $TF$. If the shoe is in a good orientation, the 2D pixel coordinate of centroid of the shoe hole is supposed to be reported.
 
-....
+\begin{table}[H]
+\centering
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{||c||c|c|c||}
+\hline
+ & Average execution time & Success rate & Maximum error \\ \hline \hline
+Adjustment locations & ms & /20 & -- \\ \hline
+Centroid coordinate & ms & /30 &  \\ \hline
+\end{tabular}}
+\caption{}
+\label{locationtest}
+\end{table}
 
-\section{Overall Performance}
 
+\section{Shoe Pose Adjustment}
+give locations -> if successfully adjust, any collisions?
+
+\section{Insertion and Pulling of The Shoelace}
+
+keep centroid , -> if insert successfully (offset + orientation) -> if pull out
+
+\section{Integrated System Performance}
+
+all of them 
