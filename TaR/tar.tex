@@ -16,7 +16,7 @@ The marked shoe will be placed at random location on the workbench for 10 times,
 \hline
  & \begin{tabular}[c]{@{}c@{}}Average \\ execution time\end{tabular} & \begin{tabular}[c]{@{}c@{}}Success \\ rate\end{tabular} & \begin{tabular}[c]{@{}c@{}}Average\\ probability\end{tabular} & \begin{tabular}[c]{@{}c@{}}Minimum \\ probability\end{tabular} & \begin{tabular}[c]{@{}c@{}}Maximum \\ probability\end{tabular} & \begin{tabular}[c]{@{}l@{}}Standard \\ deviation\end{tabular} \\ \hline
  \hline
-Shoe detection & 0.067s & 50/50 & 0.65 & 0.36 & 0.96 & 0.17 \\ \hline
+Shoe detection & 0.052s & 50/50 & 0.65 & 0.36 & 0.96 & 0.17 \\ \hline
 \end{tabular}}
 \caption{The testing results of YOLO shoe detection}
 \label{yolotest}
@@ -45,56 +45,117 @@ Return centroid coordinate & 0.046s & 30/30 \\ \hline
 \label{locationtest}
 \end{table}
 
-In the following experiment, I place the shoe vertically on the workbench for 20 times, and non-vertically for 30 times. Table \ref{locationtest} shows that my approach is able to classify the different situation with 100\% accuracy. Moreover, in most cases, the centorid location can be computed with high precision, as proved in Figure \ref{centroidresult}. 
+In the following experiment, I place the shoe vertically on the workbench for 20 times, and non-vertically for 30 times. Table \ref{locationtest} shows that my approach is able to classify the different situation with 100\% accuracy. Moreover, in most cases, the centroid location can be computed with high precision, as proved in Figure \ref{centroidresult}. 
 
 \begin{figure}[H]
 \centering
-\subfigure[]{\includegraphics[height=3cm,keepaspectratio]{TaR/1.jpg}}
-\subfigure[]{\includegraphics[height=3cm,keepaspectratio]{TaR/2.jpg}}
-\subfigure[]{\includegraphics[height=3cm,keepaspectratio]{TaR/3.jpg}}
-\subfigure[]{\includegraphics[height=3cm,keepaspectratio]{TaR/5.jpg}}
-\subfigure[]{\includegraphics[height=3cm,keepaspectratio]{TaR/6.jpg}}
-\subfigure[]{\includegraphics[height=3cm,keepaspectratio]{TaR/4.jpg}}
-\caption{The examples of computed 2D pixel position of the shoe hole. The contour is drew in white, the centorid is marked in red.}
+\subfigure[Correct]{\includegraphics[height=3cm,keepaspectratio]{TaR/1.jpg}}
+\subfigure[Correct]{\includegraphics[height=3cm,keepaspectratio]{TaR/3.jpg}}
+\subfigure[Correct]{\includegraphics[height=3cm,keepaspectratio]{TaR/4.jpg}}
+\subfigure[Correct]{\includegraphics[height=3cm,keepaspectratio]{TaR/2.jpg}}
+\subfigure[Correct]{\includegraphics[height=3cm,keepaspectratio]{TaR/5.jpg}}
+\subfigure[Small offset]{\includegraphics[height=3cm,keepaspectratio]{TaR/6.jpg}}
+\caption{The examples of the computed 2D pixel position of the shoe hole. The contour is drawn in white, the centroid is marked in red.}
 \label{centroidresult}
 \end{figure}
 
-Figure \ref{centroidresult} (e) is when the maximum error occurs. It can be discovered that there is a small offset between the red dot and the geometric center of shoe hole, which is considered to be acceptable.
+Figure \ref{centroidresult} (f) is when the maximum error occurs. It can be discovered that there is a small offset between the red dot and the geometric center of shoe hole, which is considered to be acceptable.
 
 \section{Shoe Pose Adjustment}
-This section is to assess the performance of real shoe pose adjustment. Starting with four adjustment locations ($adr$, $adrr$, $adl$, and $adll$) being provided, YuMi will use both of its arms to adjust the orientation of the shoe. This feature was tested 15 times and the results are shown in Table \ref{adjusttest}.
+This section is to assess the performance of real shoe pose adjustment. Providing with four adjustment locations ($adr$, $adrr$, $adl$, and $adll$), YuMi will use both of its arms to adjust the orientation of the shoe accordingly. This feature was tested 20 times and the results are shown in Table \ref{adjusttest}.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{||c||c|c||}
 \hline
  & Average execution time & Success rate \\ \hline \hline
-Shoe pose adjustment & s & /15 \\ \hline
+Shoe pose adjustment & 33s & 19/20 \\ \hline
 \end{tabular}
 \caption{The testing results of situation classification}
 \label{adjusttest}
 \end{table}
 
-any collisions?
+The execution time is measured from \ref{realadjust} (a) to \ref{realadjust} (e), including total 5 movements. In 19 runs, YuMi finishes its job without failures. Only one adjustment fails: after YuMi adjusting the orientation of the shoe, both arms tried to return to Home pose, which is the motion after \ref{realadjust} (e). At this time, the left arm of YuMi collided with the heel-cap of the shoe because the height of end-effector is relatively low. The robot then stopped operation due to this detected collision. After I modifying the height settings at \ref{realadjust} (e), this problem was resolved and did not happen in later tests.
 
 
 \section{Insertion and Pulling of The Shoelace}
-So far, the accuracy of YuMi's approaching pose for shoelace insertion still depends on two factors: the accuracy of estimation of shoe hole orientation, and the offset adjustment. Together with my motion planning algorithm, the real shoe insertion tests were carried out 15 times based on the condition that the 2D pixel centroid of the shoe hole and its contour area are correctly computed.
+So far, the accuracy of YuMi's approaching pose for shoelace insertion still depends on two factors: the accuracy of estimation of shoe hole orientation, and the offset adjustment. Together with my motion planning algorithm, the real shoe insertion tests were carried out 30 times based on the condition that the 2D pixel centroid of the shoe hole and its contour area are correctly computed. It was mentioned in the Requirement Capture Chapter that shoelace were assumed to be in YuMi gripper at the beginning. Therefore, in this experiment, I manually put the shoelace in the gripper and align their directions at initial stage (Figure \ref{putexample} (a)).
+
+This experiment is divided into three levels: pass the shoe hole with $2.5mm$ radius, pass the shoe hole with $4.0mm$ radius, and pass the shoe hole with $7.5mm$ radius. The results are shown in Table \ref{insert}, where the execution time is recorded between Figure \ref{putexample} (a) and Figure \ref{putexample} (e), a total of three actions. 
+
+\begin{table}[H]
+\centering
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{||c||c|c|c|c||}
+\hline
+ & \begin{tabular}[c]{@{}c@{}}Average \\ execution time\end{tabular} & \begin{tabular}[c]{@{}c@{}}Success rate \\ ($7.5mm$)\end{tabular} & \begin{tabular}[c]{@{}c@{}}Success rate \\ ($4.0mm$)\end{tabular}  & \begin{tabular}[c]{@{}c@{}}Success rate \\ ($2.5mm$)\end{tabular} \\ \hline \hline
+Shoelace insertion & 9.65s & 30/30 & 25/30 & 12/30 \\ \hline
+\end{tabular}
+}
+\caption{The testing results of shoelace insertion}
+\label{insert}
+\end{table}
+
+It can be seen that the insertion success rate reach 100\% for relatively large hole, with $7.5mm$ radius. For normal $4mm$ radius shoe hole, YuMi successfully completed its job for 25 times out of 30 runs. For the 5 failure cases, two are because the orientation of shoelace was not perfectly aligned with the gripper, when I manually put it. It resulted in the end point of the gripper touched the hole but the shoelace failed to pass through. One failure is because Yumi's gripper came loose as it rotated. The final two turnovers are due to inaccurate computation of pose $shoe_hole$, when the shoe was placed in a relative bad angle.
+
+As for $2.5mm$ shoe hole, there is more than half runs failed. Considering the diameter of the shoelace I used is approximately $2mm$, the movement must be extremely accurate to complete hole with this size. It shows that my algorithm still has room to improve, which will be further discussed in Future Work Chapter.
+
+The shoelace grabbing test is based on the same condition as for shoelace insertion. In addition, I manually passed the shoelace along the normal vector direction of the hole. This experiment was carried out 20 times, whose operation time is between \ref{pickexample} (a) and \ref{pickexample} (e), a total of three movements. 
 
 \begin{table}[H]
 \centering
 \begin{tabular}{||c||c|c||}
 \hline
  & Average execution time & Success rate \\ \hline \hline
-Shoelace insertion & s & /15 \\ \hline
-Shoelace grabbing & s & /15 \\ \hline
+Shoelace grabbing & 9.35s & 17/20 \\ \hline
 \end{tabular}
-\caption{The testing results of situation classification}
-\label{insertnpull}
+\caption{The testing results of shoelace grabbing}
+\label{pull}
 \end{table}
 
-Table \ref{insertnpull}
+Table \ref{pull} are the testing results. In the three turnovers, two are because the yaw rotation of end-effector was not perfectly parallel to the tongue, which results in slight collision between the finger and the lace guard. The final failure is because the black finger (the one 3D printed) suddenly broke when it tried to close and grab the shoelace. That finger was 3D printed again and reattached to YuMi.
 
 \section{Integrated System Performance}
+After testing every individual functionality, the performance of the integrated system was then examined. This experiment starts from randomly placing the shoe on the workbench, YuMi should adjust the shoe pose if necessary. Once the shoe is in a good position, the shoelace was manually put in and aligned with the YuMi gripper. After that, YuMi are supposed to pass it into the shoe hole and pull it out. The shoe hole used in this experiment has $4mm$ radius.
 
-all of them 
+\begin{table}[H]
+\centering
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{||c||c|c|c|c|c||}
+\hline
+ \begin{tabular}[c]{@{}c@{}}Placement of \\ the shoe\end{tabular} & \begin{tabular}[c]{@{}c@{}}Average \\ execution time\end{tabular} & \begin{tabular}[c]{@{}c@{}}Success rate \\ for detection\end{tabular} & \begin{tabular}[c]{@{}c@{}}Success rate \\ for adjustment\end{tabular} & \begin{tabular}[c]{@{}c@{}}Success rate \\ for insertion\end{tabular} & \begin{tabular}[c]{@{}c@{}}Success rate \\ for pulling\end{tabular}
+ \\ \hline \hline
+Bad position & 116s & 20/20 & 19/20 & 17/20 & 16/20 \\ \hline
+Good position & 60s & 20/20 & -- & 17/20 & 15/20 \\ \hline
+\end{tabular}
+}
+\caption{The testing results of integrated system}
+\label{integratedtest}
+\end{table}
+
+
+\begin{figure}[H]
+\centering
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t1.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t2.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t3.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t4.jpg}}
+
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t5.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t6.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t7.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t8.jpg}}
+
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t9.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t16.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t10.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t11.jpg}}
+
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t12.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t13.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t14.jpg}}
+\subfigure[]{\includegraphics[width = 0.24\columnwidth]{TaR/t15.jpg}}
+\caption{}
+\label{integratedtestfig}
+\end{figure}
+
