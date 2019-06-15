@@ -148,7 +148,7 @@ Since the shoe is marked, shoe hole detection can be achieved with color detecti
 
 The image of shoe always contains a certain level of high frequency noise. Various blurring and smoothing techniques have been tried to tackle this issue and their results are shown in Figure \ref{zedfilter} second line. The blurred image is then converted to HSV color space. After that, a mask for color 'blue' is constructed using its predefined lower and color boundaries. The $erode$ and $dilate$ functions are then performed to remove any small blobs remain in the mask. It can be discovered that basically all the four filter can provide a reasonable mask of shoe hole area.
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \subfigure{\includegraphics[width = 0.24\columnwidth]{Implementation/cv/zbi1.png}}
 \subfigure{\includegraphics[width = 0.24\columnwidth]{Implementation/cv/zg1.png}}
