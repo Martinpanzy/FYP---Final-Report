@@ -135,7 +135,7 @@ Figure \ref{preposeadjust} shows the detected shoe hole before and after adjustm
 \end{figure}
 
 
-\section{Robot Gripper Approaching Pose}
+\section{Robot Gripper Approaching Pose} \label{approachposegripper}
 When the orientation of the shoe is ideal, YuMi will start to put the shoe lace into the hole by using the computed $shoe\_hole$ and $pre\_put$ information. Same as the method used in previous section, these two locations are firstly transformed to $yumi\_base\_link$ frame, which gives the coordinates of (xn, yn, zn) and (x, y, z).
 
 \begin{figure}[H]
@@ -218,11 +218,11 @@ Figure \ref{putexample} shows the insertion process, where YuMi will start from 
 
 \begin{figure}[H]
 \centering
-\subfigure[Move to initial pose, and attach shoelace manually]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put1.jpg}}
-\subfigure[Move to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put2.jpg}}
-\subfigure[Move to shoe\_hole and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put3.jpg}}
-\subfigure[Move back to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put4.jpg}}
-\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/put5.jpg}}
+\subfigure[Move to initial pose, and attach shoelace manually]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/1put.jpg}}
+\subfigure[Move to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/2put.jpg}}
+\subfigure[Move to shoe\_hole and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/3put.jpg}}
+\subfigure[Move back to pre\_put]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/4put.jpg}}
+\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/5put.jpg}}
 \caption{The example motion process of inserting shoelace into a target hole}
 \label{putexample}
 \end{figure}
@@ -266,13 +266,32 @@ In addition, $-0.1$ is added to yaw rotation. This angle adjustment prevents gri
 
 \begin{figure}[H]
 \centering
-\subfigure[Move to home pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull1.jpg}}
-\subfigure[Move to pre-grabbing and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull2.jpg}}
-\subfigure[Move to grabbing\_pose and close the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull3.jpg}}
-\subfigure[Move back to pre-grabbing]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull4.jpg}}
-\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/pull5.jpg}}
+\subfigure[Move to home pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/1pull.jpg}}
+\subfigure[Move to pre-grabbing and open the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/2pull.jpg}}
+\subfigure[Move to grabbing\_pose and close the gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/3pull.jpg}}
+\subfigure[Move back to pre-grabbing]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/4pull.jpg}}
+\subfigure[Move back to initial pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/5pull.jpg}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/6pull.jpg}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/7pull.jpg}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/8pull.jpg}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/9pull.jpg}}
+\subfigure[]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/10pull.jpg}}
 \caption{The example motion process of pulling shoelace out}
 \label{pickexample}
 \end{figure}
 
-Figure \ref{pickexample} displays the grasp process, where YuMi will use its left arm. It starts from Cal pose, then moves to (a) Home pose before executing. After finishing the task, it will return to Initial pose (e) and finally back to Cal pose.
+Figure \ref{pickexample} displays the grasp process, where YuMi firstly uses its left arm. It starts from Cal pose, then moves to (a) Home pose before executing, and moves back to pre-grabbing pose (d) after grabbing. 
+The series of motions after (e) is for shoelace adjustment, which aims to let another gripper grasp the lower part of the shoelace, so that its colored head can be seen by the camera. To achieve this task, YuMi will firstly pull the shoelace out in (e), then move downwards to let the it hang naturally. After that the right gripper will move below the left gripper for clamping. To prevent the head from falling behind gripper which blocks the camera's view, in (i), the right arm will then move slightly away from the camera before the left gripper opening. Finally, the left arm will return to Home pose (j) and back to Cal pose. 
+
+All of the motions from (e) to (j) are planned by setting joint goals. Therefore, the posture of both arms is fixed every time. Figure \ref{3dlace} displays the camera view at stage (j).
+
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width = 0.6\columnwidth]{Implementation/mp/3dlace.jpg}
+\caption{}
+\label{3dlace}
+\end{figure}
+
+Since the arm pose is static each time, the colored head of shoelace will always appear in the red bounding box in Figure \ref{3dlace}. Using the same approach as discussed in Section \ref{3dlocationestimation} and \ref{3DOrientationofShoeHole}, the the 3D location and orientation of the shoelace can be computed. By employing similar method introduced in Section \ref{approachposegripper}, the left gripper is able to align its direction with the colored head and re-clamp. After the orientation of the shoe being adjusted based on the algorithm in Section \ref{shoeadjust} and \ref{adj} using one single arm, YuMi will be ready to perform insertion for next hole. The whole shoe can be eventually completed according to this workflow.

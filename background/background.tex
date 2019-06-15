@@ -2,6 +2,12 @@
 %Thorough discovery of background material. Decisions made in the project are correctly informed by background. Analysis of competing products, software standards, necessary software tools, background theory.
 % The background section of the report should set the project into context by relating it to existing published work which you read at the start of the project when your approach and methods were being considered. The published work may be in the form of research papers, articles, text books, technical manuals, or even existing software or hardware of which you have had hands-on experience.
 
+— Background: link (and make explicit this link between) the different topics in a coherent pipeline: 
+hardware-(choice of robot) > motion planning->state information (camera) (object detection +  orientation detection)-> … etc
+It should not feel as if it was a unrelated list of topics. Maybe an overview diagram in the beginning of the background section would help.
+
+— Background: motion planning is discussed but examples are only for 2D configurations. You might want to show some examples in 3D space.
+
 \section{Robot's Choice}
 There are three robots available for this project: iCub, Baxter and ABB YuMi.
 
@@ -30,7 +36,7 @@ The purpose of robotic motion planning is to seek the solution of the problem of
 
 \begin{figure}[H]
 \centering
-\includegraphics[width = 0.4\columnwidth]{background/rpy.jpg}
+\includegraphics[width = 0.4\columnwidth]{background/rpy.png}
 \caption{Roll, pitch, yaw rotation related to x, y, z axis}
 \label{rpy}
 \end{figure}
@@ -59,8 +65,9 @@ According to \citep{OMPLPrim20:online}, there are plenty of methods still applic
 
 \begin{figure}[H]
 \centering
-\includegraphics[width = 0.4\columnwidth]{background/potentialfield.png}
-\caption{The potential fields when there is a goal and an obstacle \citep{potential}}
+\subfigure[\citep{potential}]{\includegraphics[height=5.3cm,keepaspectratio]{background/potentialfield.png}}
+\subfigure[\citep{3dpotential}]{\includegraphics[height=5.3cm,keepaspectratio]{background/potentialfield3d.jpg}}
+\caption{The potential fields when !! there is a goal and an obstacle}
 \label{potentialexample}
 \end{figure}
 
