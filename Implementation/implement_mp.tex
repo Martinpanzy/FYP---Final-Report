@@ -2,7 +2,7 @@
 
 This chapter will cover the implementation methods on motion planning side of this project. The entire code for this part can be seen in !!!!!!!!!!
 
-\section{MoveIt! Interface and Planning Scene Setup}
+\section{MoveIt! Interface and Planning Scene Setup} \label{motionplansetup}
 As mentioned in Background Chapter, the motion planning part will utilize MoveIt!. The $moveit\_commander$ namespace is imported in order to use Python MoveIt! interface. This namespace contains a $RobotCommander$ class, a $MoveGroupCommander$ class, and a $PlanningSceneInterface$ class.
 
 A $RobotCommander$ object is firstly instantiated called $robot$. This object is the outer-level interface to the robot, which allow user to catch YuMi's names of joints, groups, and links and easy access to their properties.
@@ -37,7 +37,7 @@ display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path
 \end{minted}
 
 
-\section{Movement Control}
+\section{Movement Control} \label{movementcontrol}
 The opening and closing of YuMi' gripper(s) depend on the gripper effort value, which needs to be set between $-20$ to $20$. The gripper will open when the value is negative and close when it is positive. By publishing the effort value of specific gripper to its corresponding topic, $/yumi/gripper\_r\_effort\_cmd$ for right gripper, or $/yumi/gripper\_l\_effort\_cmd$ for left gripper, the gripper control function can be achieved. 
 
 %(Whether the command is to open or close, the effort value will eventually set to 0 in order to relax the effort, which will not change the gripper state.)
@@ -164,7 +164,7 @@ By using Equation \ref{rollcalculation} and \ref{pitchcalculation}, the roll and
 
 So far, the preliminary pre-put pose is $[xn, yn, zn, a, b + \pi, \pi]$ and the preliminary insertion pose is $[x, y, z, a, b + \pi, \pi]$. However, these poses are not accurate enough for this precision task, whose offsets need to be further adjusted.
 
-\section{Offset Adjustment}
+\section{Offset Adjustment} \label{offsetadjustment}
 When letting YuMi's gripper move to a specific 3D location with default orientation $(0, \pi, \pi)$ (facing the ground), the system needs to add $-0.025$ offset on the x-axis ($x\_offset$), $0.005$ offset on the y-axis ($y\_offset$), and $0.145$ offset on the z-axis ($z\_error$) to achieve relatively precise movement. However, the offset adjustment becomes complicate when considering the gripper's orientation.
 
 \begin{figure}[H]
@@ -227,7 +227,7 @@ Figure \ref{putexample} shows the insertion process, where YuMi will start from 
 \label{putexample}
 \end{figure}
 
-\section{Shoelace Grabbing}
+\section{Shoelace Grabbing} \label{shoelacegrabbing}
 After the shoelace being passed through the hole, YuMi should locate this shoelace and pull it out to complete this single hole. Since the endpoint of a shoelace is straight, the orientation of the shoelace is considered to be aligned with this direction. Therefore, the approximately location of shoelace can be computed using the normal vector calculated in Section \ref{3DOrientationofShoeHole}. Given the normal vector $n = Ai + Bj + Ck$, the grab location is set as $(0.05*A, 0.05*B, 0.05*C)$ referenced to $shoe\_hole$, where $0.05$ is used to define the distance. Figure \ref{pick} shows the related frames in Rviz, where $pre\_put$, $shoe\_hole$, and $pick$ are on the same normal vector. Here, the $pick$ will be transformed to $yumi\_base\_link$ frame as well, which gives the coordinate $(xp, yp, zp)$.
 
 \begin{figure}[H]
