@@ -3,12 +3,12 @@
 % The background section of the report should set the project into context by relating it to existing published work which you read at the start of the project when your approach and methods were being considered. The published work may be in the form of research papers, articles, text books, technical manuals, or even existing software or hardware of which you have had hands-on experience.
 
 %link (and make explicit this link between) the different topics in a coherent pipeline: hardware-(choice of robot) > motion planning->state information (camera) (object detection +  orientation detection)-> etc
-This chapter contains the background information of this project. Several potential implementation approaches are discussed and the design choices are made. As illustrated in Figure \ref{bgov}, the content starts with robot selection, then dives into motion planning algorithms. The available cameras that provide state information for robot are then evaluated. After that, the techniques for objects 6D pose calculation are summarised and compared, which consists of object detection and orientation estimation. Finally, the system and software to implement the selected methods are introduced.
+This chapter contains the background information of this project. Several potential implementation approaches are discussed and the design choices are made. As illustrated in Figure \ref{bgov}, the content starts with robot selection, then dives into motion planning algorithms. The available cameras that provide state information for the robot are then evaluated and chosen. After that, the techniques for objects 6D pose calculation are summarised and compared, which consists of object detection and orientation estimation. Finally, the system and software that used to implement the selected methods are introduced.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width = \columnwidth]{background/backgroundov.png}
-\caption{}
+\caption{The order of background introduction}
 \label{bgov}
 \end{figure}
 
@@ -35,7 +35,7 @@ The purpose of robotic motion planning is to seek the solution of the problem of
 
 \begin{itemize}
     \item \textbf{Work Space:} The physical space where the robot operates.
-    \item \textbf{Configuration/State Space:} The configuration that describes the robot pose. For a solid 3D robot like YuMi, it can perform both translation and rotation. Therefore, a configuration needs 6 parameters: (x, y, z) for translation and (roll, pitch, yaw) for rotation, whose relationships are shown in Figure \ref{rpy}.
+    \item \textbf{Configuration/State Space:} The configuration that describes the robot pose. For a solid 3D robot like YuMi, it can perform both 3D translation and 3D rotation. Therefore, a configuration needs 6 parameters: (x, y, z) for translation and (roll, pitch, yaw) for rotation, whose relationships are shown in Figure \ref{rpy}.
 \end{itemize}
 
 \begin{figure}[H]
@@ -57,27 +57,27 @@ According to \citep{OMPLPrim20:online}, there are plenty of methods still applic
 \begin{figure}[H]
 \centering
 \includegraphics[width = \columnwidth]{background/cell.png}
-\caption{From left to right: approximate cell decomposition, exact cell decomposition, and motion planning using exact cell decomposition. The blue regions are obstacles. \citep{celldecom}}
+\caption{2D cell decomposition example where the blue regions are obstacles \citep{celldecom}. From left to right: approximate cell decomposition, exact cell decomposition, and motion planning using exact cell decomposition. The available path is through C3, C6, C9, C10, C12, C13, and C15.}
 \label{cell}
 \end{figure}
 
 \begin{itemize}
-    \item \textbf{Exact and Approximate Cell Decomposition:} This approach partitions the work space into discrete cells that corresponding to free space, where edges represent adjacency among cells and vertices indicate the individual cells (see Figure \ref{cell}). Therefore, the motion planning problem becomes a search from starting cell to the cell with goal position. This method has a trade off when setting the grid resolution. Coarser grid gives a faster search, but cannot find path for narrow parts of free space. Moreover, the number of points on the grid is exponentially proportional to configuration space dimension, which is inappropriate for this project.
+    \item \textbf{Exact and Approximate Cell Decomposition:} This approach partitions the work space into discrete cells that corresponding to free space, where edges represent adjacency among cells and vertices indicate the individual cells (see Figure \ref{cell}). Therefore, the motion planning problem becomes a search from starting cell to the cell with goal position. This method has a trade off when setting the grid resolution. Coarser grid gives a faster search, but cannot find path for narrow parts of free space. Moreover, the number of points on the grid is exponentially proportional to configuration space dimension. This project has 6D state space, thus it is inappropriate to use this method.
 
     \item \textbf{Control-based Methods:} This method employed control theory and operates in continuous space. It typically uses feedback loops to manipulate the robot with minimal error. However, in complex dynamics environments, it is hard to calculate a feasible trajectory and the valid motions will be restricted.
+
+    \item \textbf{Potential Fields:} This technique computes a vector at each point in the work space by summing up the an attractive force emanating from the goal, and a repulsive force from all obstacles and the boundaries (see Figure \ref{potentialexample}). It treats the configuration of robot as a point in a potential field. Although it only requires little computation, navigating using gradient descent to follow the potentials to goal can fail due to local minima in the field. This issue occurs when the attractive forces and repelling forces cancel each other out at a specific point.
 \end{itemize}
 
 \begin{figure}[H]
 \centering
-\subfigure[\citep{potential}]{\includegraphics[height=5.3cm,keepaspectratio]{background/potentialfield.png}}
-\subfigure[\citep{3dpotential}]{\includegraphics[height=5.3cm,keepaspectratio]{background/potentialfield3d.jpg}}
-\caption{The potential fields when !! there is a goal and an obstacle}
+\subfigure[Potential field in a 2D space contains a goal and an obstacle \citep{potential}]{\includegraphics[height=5.3cm,keepaspectratio]{background/potentialfield.png}}
+\subfigure[Potential field in 3D space \citep{3dpotential}. Warm colors represent high potential (obstacles) and cool colors indicate low potential (goals).]{\includegraphics[height=5.3cm,keepaspectratio]{background/potentialfield3d.jpg}}
+\caption{Example of the potential field approach}
 \label{potentialexample}
 \end{figure}
 
 \begin{itemize}
-    \item \textbf{Potential Fields:} This technique computes a vector at each point in the work space by summing up the an attractive force emanating from the goal, and a repulsive force from all obstacles (see Figure \ref{potentialexample}). It treats the configuration of robot as a point in a potential field. Although it only requires little computation, navigating using gradient descent to follow the potentials to goal can fail due to local minima in the field.
-    
     \item \textbf{Randomized Planning:} Randomization can be effective in motion planning. For example, in potential fields, it has been shown that Brownian motions where applying a random action for a specific amount of time can effectively guide a system out of the local minima.
 \end{itemize}
 
@@ -112,7 +112,7 @@ There are many existing sampling-based algorithms, such as Rapidly-expanding Ran
 \subfigure[The first few random valid samples have been connected to the tree using an expansion heuristic]{\includegraphics[width = 0.45\columnwidth]{background/rm5.png}}
 \subfigure[Case when the goal cannot be connected to the tree because of an obstacle]{\includegraphics[width = 0.45\columnwidth]{background/rm6.png}}
 \subfigure[Case when the goal can be connected to the tree]{\includegraphics[width = 0.45\columnwidth]{background/rm7.png}}
-\caption{Tree-based Planners example \citep{OMPLPrim20:online}}
+\caption{Tree-based planners example \citep{OMPLPrim20:online}}
 \label{tree}
 \end{figure}
 

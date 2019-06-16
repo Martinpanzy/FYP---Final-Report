@@ -18,7 +18,7 @@ The dual-arm robot YuMi communicates with ROS using Personal Robotics Lab setup 
 
 Figure \ref{c4} displays the system overview of this project, which consists six components: the shoe, the camera, computer vision module, ROS Kinetic, motion planning module, and YuMi. Blue arrows represent computer vision messages and orange arrows indicate related motion plans and manipulations.
 
-Starting from the camera, which consistently recording RGB and depth images of the workbench and outputs them to the computer vision module. The module then performs several functions including shoe detection, shoe hole tracking, 6D shoe hole pose estimation etc and publishes the corresponding message to ROS topics. After that, the motion planning module subscribes these information and plans YuMi arms trajectories accordingly to adjust shoe pose or put lace on a hole. If the planning succeeds, YuMi will then execute these motions to manipulate shoe and shoe lace.
+Starting from the camera, which consistently recording RGB and depth images of the workbench and outputs them to the computer vision module. The module then performs several functions including shoe detection, shoe hole tracking, 6D shoe hole pose estimation etc and publishes the corresponding message to ROS topics. After that, the motion planning module subscribes these information and plans YuMi arms trajectories accordingly to adjust shoe pose or put lace on a hole. If the planning succeeds, YuMi will then execute these motions to manipulate the shoe and shoe lace.
 
 %detail---------------------------
 \section{System Workflow}
@@ -26,10 +26,10 @@ Starting from the camera, which consistently recording RGB and depth images of t
 \begin{figure}[H]
 \centering
 \includegraphics[width = \columnwidth]{AnalysisDesign/workflow.png}
-\caption{System workflow}
+\caption{System workflow for both core project and the extension}
 \label{workflow}
 \end{figure}
 
-discussion ................
+Figure \ref{workflow} is the illustration of the system workflow, where orange boxes are motion planning related and blue boxes are about computer vision. Starting with shoe detection, the system will then evaluate whether the shoe is in a good pose for manipulation or not. If the answer is negative, the required locations for adjustment will be computed and YuMi should manipulate the shoe accordingly. On the contrary, the system will compute the gripper approaching pose for shoelace insertion based on the estimated 6D pose of the shoe hole. Once the offset being correctly adjusted, YuMi will pass the shoelace into that hole and pull it out. Finally, the 6D pose of the shoelace will be calculated and the YuMi will reclamp it so that the gripper and shoelace can be aligned. After this stage, the system is back to shoe detection and ready for next hole.
 
-The following two chapters will discuss detailed implementation approaches.
+This workflow allows YuMi to plan a sequences of arm trajectories to put the shoelace on the shoe hole up to finishing the whole shoe. The following two chapters will discuss detailed implementation approaches for computer vision module and motion planning module respectively.

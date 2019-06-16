@@ -4,7 +4,7 @@ In order to examine the performance and robustness of my approach, a serious of 
 
 In all experiments, I utilize the same platform as shown in Figure \ref{5.1}. It consists of a YuMi robot and an external camera (ZED Mini or ASUS Xtion). In order to maximize the accuracy while ensuring a reasonable frame speed, ZED Mini camera with 1080p resolution is chosen for all the experiments in this chapter. The marked shoe will be placed on the workbench within the area YuMi can reach. All tests were conducted under normal lighting conditions. 
 
-\section{Shoe Detection and Coordinate Estimation}
+\section{Computer Vision Module}
 The purpose of this part experiment is to assess the robustness of object detection and if the system can correctly compute adjustment locations or the centroid of the shoe hole.
 
 The marked shoe will be placed at random location on the workbench for 10 times, together with other disturbing objects. For each location, I rotate the shoe 5 times to adjust its orientation. YOLO algorithm will be used to perform shoe detection and return the prediction probability and the bounding box. Its performance is illustrated in Table \ref{yolotest}.
@@ -78,7 +78,7 @@ Shoe pose adjustment & 33s & 19/20 \\ \hline
 The execution time is measured from \ref{realadjust} (a) to \ref{realadjust} (e), including total 5 movements. In 19 runs, YuMi finishes its job without failures. Only one adjustment fails: after YuMi adjusting the orientation of the shoe, both arms tried to return to Home pose, which is the motion after \ref{realadjust} (e). At this time, the left arm of YuMi collided with the heel-cap of the shoe because the height of end-effector is relatively low. The robot then stopped operation due to this detected collision. After I modifying the height settings at \ref{realadjust} (e), this problem was resolved and did not happen in later tests.
 
 
-\section{Insertion and Pulling of The Shoelace}
+\section{Insertion and Pulling of the Shoelace}
 So far, the accuracy of YuMi's approaching pose for shoelace insertion still depends on two factors: the accuracy of estimation of shoe hole orientation, and the offset adjustment. Together with my motion planning algorithm, the real shoe insertion tests were carried out 30 times based on the condition that the 2D pixel centroid of the shoe hole and its contour area are correctly computed. It was mentioned in the Requirement Capture Chapter that shoelace were assumed to be in YuMi gripper at the beginning. Therefore, in this experiment, I manually put the shoelace in the gripper and align their directions at initial stage (Figure \ref{putexample} (a)).
 
 This experiment is divided into three levels: pass the shoe hole with $2.5mm$ radius, pass the shoe hole with $4.0mm$ radius, and pass the shoe hole with $7.5mm$ radius. The results are shown in Table \ref{insert}, where the execution time is recorded between Figure \ref{putexample} (a) and Figure \ref{putexample} (e), a total of three actions. 
