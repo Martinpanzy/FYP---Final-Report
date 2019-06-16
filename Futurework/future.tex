@@ -17,9 +17,12 @@ For this approach, the wrist camera will detect and calculate the pose of shoe h
 \section{Shoe Model Construction}
 As mentioned in Section \ref{oriestimation} of Background Chapter, there are numbers of existing methods to estimate the 6D pose of objects. By building shoe dataset that contains the photos and labels, and then retaining these models, the 6D pose of shoe can be computed in real-time. 
 
-After that, the 3D model of manipulated shoe need be constructed, which should contain the relative pose between every shoe hole and the centroid of the shoe. By doing this, once the pose estimation model gives the 6D pose of the shoe, every hole's pose can be determined accordingly. The motion planning algorithm can be applied directly afterwards. This approach is a combination of shoe detection, 3D location estimation and 3D orientation estimation discussed in this report. Adv
+After that, the 3D model of manipulated shoe need be constructed, which should contain the relative pose between every shoe hole and the centroid of the shoe. By doing this, once the pose estimation model gives the 6D pose of the shoe, every hole's pose can be determined accordingly. The motion planning algorithms can be applied directly afterwards. This approach is a combination of shoe detection, 3D location estimation and 3D orientation estimation discussed in this report. It is also not restricted by the color of shoes.
 
 \section{Deformable Object Tracking}
-
+For regular shoelace without distinct color, color detection can not be applied. According to \citep{deformable_track}, the shoelace tracking problem can be addressed by using a probabilistic generative model that incorporates physical properties of tracked objects and its environments, as well as the point cloud sensor readings. 
 
 \section{Reinforcement Learning}
+This project can be extended to the area of reinforcement learning (RL), which enables autonomous robot to learn behavioral skills. The basic RL system is characterized by actor and critic modules. The actor interacts with the shoe or shoe hole by selecting system actions given a specific input state. While the critic provides the feedback about how successful the actions were (such as how close the shoelace and shoe hole were), which is used to refine the action.
+
+However, there is a trade-off between the autonomy of the learning process and the training time. Human supplied demonstration and hand engineered policy are typically involved. This limitation can be alleviated by deep RL which trains general-purpose neural network (NN) policies, but the applications are restricted to simple tasks due to their high sample complexity. According to \citep{reinforcementl}, a recent deep RL based on off-policy training of deep Q functions can learn NN policies efficiently and train on the real physical robot to perform complex 3D manipulation tasks.
