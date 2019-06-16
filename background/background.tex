@@ -2,13 +2,17 @@
 %Thorough discovery of background material. Decisions made in the project are correctly informed by background. Analysis of competing products, software standards, necessary software tools, background theory.
 % The background section of the report should set the project into context by relating it to existing published work which you read at the start of the project when your approach and methods were being considered. The published work may be in the form of research papers, articles, text books, technical manuals, or even existing software or hardware of which you have had hands-on experience.
 
-— Background: link (and make explicit this link between) the different topics in a coherent pipeline: 
-hardware-(choice of robot) > motion planning->state information (camera) (object detection +  orientation detection)-> … etc
-It should not feel as if it was a unrelated list of topics. Maybe an overview diagram in the beginning of the background section would help.
+%link (and make explicit this link between) the different topics in a coherent pipeline: hardware-(choice of robot) > motion planning->state information (camera) (object detection +  orientation detection)-> etc
+This chapter contains the background information of this project. Several potential implementation approaches are discussed and the design choices are made. As illustrated in Figure \ref{bgov}, the content starts with robot selection, then dives into motion planning algorithms. The available cameras that provide state information for robot are then evaluated. After that, the techniques for objects 6D pose calculation are summarised and compared, which consists of object detection and orientation estimation. Finally, the system and software to implement the selected methods are introduced.
 
-— Background: motion planning is discussed but examples are only for 2D configurations. You might want to show some examples in 3D space.
+\begin{figure}[H]
+\centering
+\includegraphics[width = \columnwidth]{background/backgroundov.png}
+\caption{}
+\label{bgov}
+\end{figure}
 
-\section{Robot's Choice}
+\section{Choice of Robot}
 There are three robots available for this project: iCub, Baxter and ABB YuMi.
 
 The \citep{iCub} is a 1-metre tall humanoid robot for research in human cognition and artificial intelligence, which has 53 actuated degrees of freedom across its body. Moreover, it has facial expressions and can establish eye contact with users. However, its joints are relatively weaker than Baxter and YuMi. Considering this project only needs vision and robot arms, iCub is not considered as the best robot.
@@ -115,7 +119,7 @@ There are many existing sampling-based algorithms, such as Rapidly-expanding Ran
 The memory requirement of sampling-based techniques is lower than other types of planners, because no explicit representation of free configuration space is required. It is extremely powerful to plan in complex dynamics and high-dimensional space. However, implementing these algorithms in a generic way is non-trivial. Thus, Open Motion Planning Library (OMPL) \citep{OMPL} is employed to plan the YuMi arm trajectories in this project, which is also available for use through the Robot Operating System (ROS).
 In this case, after defining the configuration space, only start state, goal state, and environment scene need to be supplied to plan a single motion. 
 
-\section{Camera's Choice}
+\section{Choice of Camera}
 
 Due to the fact that this project requires 3D localization of interested objects (shoes, shoe hole etc.), the camera must be able to provide depth information, which allows user to segment images. There are two types of RGB-D cameras available in the Lab, ASUS Xtion PRO and Microsoft Kinect. Both cameras provide similar functionalities, they all have an infrared emitter (leftmost), RGB camera (middle), and an infrared depth camera (rightmost). Their resolutions are also the same, which is $640 \times 480$. Considering the ASUS Xtion PRO has already been fixed on the robot, I used it directly for this project.
 
