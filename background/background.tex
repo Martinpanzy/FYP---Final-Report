@@ -30,7 +30,7 @@ The \citep{baxter} is a two-armed robot which is 3 feet tall and has a pedestal 
 
 Referring to \citep{ABBsDual5:online}, YuMi is "a collaborative, dual arm, small parts assembly robot that includes flexible hands, parts feeding systems, camera-based part location and state-of-the-art robot control". With 7 degrees of freedom in each arm, it is designed for precise vision-based motion planning and thus is most appropriate to this project.
 
-\section{Motion Planning}
+\section{Motion Planning} \label{backgroundmp}
 The purpose of robotic motion planning is to seek the solution of the problem of "Go from the start configuration to the goal configuration while respecting all of the robot's constraints", such as avoiding collision with obstacles. A motion planning algorithm takes these tasks description as input, then calculates a path in configuration space. Below are several key concepts in robot motion planning problem.
 
 \begin{itemize}
@@ -120,8 +120,9 @@ The memory requirement of sampling-based techniques is lower than other types of
 In this case, after defining the configuration space, only start state, goal state, and environment scene need to be supplied to plan a single motion. 
 
 \section{Choice of Camera}
+As mentioned in Section \ref{backgroundmp}, the configuration space for YuMi motion planning is 6D. The state information including 3D location and 3D orientation of the goal must be provided before robot manipulation. In order to calculate the pose of shoe and shoelace, the camera must be able to provide depth information, which allows user to segment images. 
 
-Due to the fact that this project requires 3D localization of interested objects (shoes, shoe hole etc.), the camera must be able to provide depth information, which allows user to segment images. There are two types of RGB-D cameras available in the Lab, ASUS Xtion PRO and Microsoft Kinect. Both cameras provide similar functionalities, they all have an infrared emitter (leftmost), RGB camera (middle), and an infrared depth camera (rightmost). Their resolutions are also the same, which is $640 \times 480$. Considering the ASUS Xtion PRO has already been fixed on the robot, I used it directly for this project.
+In the beginning, there are two types of RGB-D cameras available in the Lab, ASUS Xtion PRO and Microsoft Kinect. Both cameras provide similar functionalities, they all have an infrared emitter (leftmost sensor), RGB camera (middle sensor), and an infrared depth camera (rightmost sensor). Their resolutions are also the same, which is $640 \times 480$. Considering the ASUS Xtion PRO has already been fixed on the robot, I used it directly for algorithm development.
 
 \begin{figure}[H]
 \centering
@@ -132,7 +133,7 @@ Due to the fact that this project requires 3D localization of interested objects
 \label{camera}
 \end{figure}
 
-In the later stage of this project, another stereo camera named ZED Mini became available. It has two lenses with a separate film frame for each lens, which allows it to simulate human vision, and capture three-dimensional images. Its resolution is up to $2208 \times 1242$, much higher than that of ASUS Xtion and Kinect. Therefore, I ended up choosing this camera.
+In the later stage of this project, another stereo camera named ZED Mini became available. It has two lenses with a separate film frame for each lens, which allows it to simulate human vision, and capture three-dimensional images. Its resolution is up to $2208 \times 1242$, much higher than that of ASUS Xtion and Kinect. Therefore, I ended up choosing this camera. It is worth mentioning that the fianl computer vision algorithms I implemented can be used on both ASUS Xtion and ZED Mini.
 
 
 \section{Object Detection} \label{od}
