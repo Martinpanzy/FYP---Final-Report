@@ -28,7 +28,7 @@ In ROS, video streams are represented by these sequences of images. If user woul
 \label{5.1}
 \end{figure}
 
-Figure \ref{5.1} displays the relative position between YuMi and the two cameras. The cameras' location and orientation transform from YuMi frame $yumi\_base\_link$ are illustrated in Table \ref{cameraframeset} and written in the YuMi launch file (see !!!!!!!). These data are measured manually, which allow ROS $TF$ to perform frame transformation between any camera detected objects and YuMi in this project. 
+Figure \ref{5.1} displays the relative position between YuMi and the two cameras. The cameras' location and orientation transform from YuMi frame $yumi\_base\_link$ are illustrated in Table \ref{cameraframeset} and written in the YuMi launch file (see User Guide Chapter for more details). These data are measured manually, which allow ROS $TF$ to perform frame transformation between any camera detected objects and YuMi in this project. 
 \begin{table}[H]
 \centering
 \resizebox{\columnwidth}{!}{
@@ -39,7 +39,7 @@ ASUS Xtion & /camera\_link & {[}0.2013, 0.0641, 0.6934, -0.0238, 0.4836, -0.0141
 ZED Mini & /zed\_left\_camera\_frame & {[}0.2263, 0.0541, 0.7134, -0.0238, 0.4836, -0.0141, 0.875{]} \\ \hline
 \end{tabular}
 }
-\caption{Transform settings between YuMi and cameras}
+\caption{Transform settings between YuMi frame and camera frames}
 \label{cameraframeset}
 \end{table}
 
@@ -53,7 +53,7 @@ As mentioned in Background Chapter, YOLO9000 will be used for shoe detection. \c
 \label{yolofolder}
 \end{figure}
 
-Figure \ref{yolofolder} shows some important files in $darknet\_ros$. The $.weights$ file and $.cfg$ file contain the trained weights and labels etc for a specific YOLO version. Here, I use YOLO9000. The $yolo.yaml$ file points to these two files and defines a threshold value $0.3$. The results will be reported only if the YOLO9000 prediction probability of a detection class exceeds this value. 
+Figure \ref{yolofolder} shows some important files in $darknet\_ros$. The $.weights$ file and $.cfg$ file contain the trained weights and labels etc for a specific YOLO version. Here, I use YOLO9000. The $yolo.yaml$ file points to these two files and defines a threshold value $0.3$. By doing this, the results will be reported only if the YOLO9000 prediction probability of a detection class exceeds this value. 
 
 The file named $ros.yaml$ defines the names and some parameters of the publishers, subscribers and actions of $darknet\_ros.launch$. Here, the input can be set as camera topic $/camera/rgb/image\_raw$ for ASUS Xtion, or $/zed\slash zed\_node\slash rgb\slash image\_rect\_color$ for ZED Mini, both contain the RGB images taken by the camera. It publishes several topics but only $/darknet\_ros/bounding\_boxes$ will be used in the following algorithms. The messages in this topic include the prediction class names of objects, their prediction probabilities and 2D bounding box coordinates ($xmin$, $xmax$, $ymin$, and $ymax$). If the category is predicted as 'shoe' or 'footwear', the corresponding box coordinates will be recorded. By speeding up with GPU, $darknet\_ros$ can update the detection results approximately every 0.05 seconds.
 
@@ -65,16 +65,7 @@ The file named $ros.yaml$ defines the names and some parameters of the publisher
 \label{5.2zed}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\subfigure[RGB raw image]{\includegraphics[width = 0.45\columnwidth]{Implementation/cv/raw.png}}
-\subfigure[YOLO detection image including bounding boxes]{\includegraphics[width = 0.45\columnwidth]{Implementation/cv/yolo.png}}
-\caption{ASUS Xtion camera image before and after using YOLO detection system}
-\label{5.2asus}
-\end{figure}
-
 Figure \ref{5.2zed} and \ref{5.2asus} are the examples of YOLO detection using different cameras.
-
 
 
 \section{Required Locations for Shoe Pose Adjustment} \label{shoeadjust}
@@ -87,7 +78,7 @@ Figure \ref{5.2zed} and \ref{5.2asus} are the examples of YOLO detection using d
 \subfigure[]{\includegraphics[width = 0.15\columnwidth]{Implementation/cv/4.png} \label{ver2}}
 \subfigure[]{\includegraphics[width = 0.15\columnwidth]{Implementation/cv/5.png}}
 \subfigure[]{\includegraphics[width = 0.15\columnwidth]{Implementation/cv/6.png}}
-\caption{Examples of possible shoe orientations}
+\caption{Examples of possible shoe orientations. The shoe poses in (c) and (d) are not ideal and need adjustment.}
 \end{figure}
 
 In the beginning, the shoe can be placed on the workbench in different directions, making the real manipulation difficult in some cases, especially when it is vertically placed (Figure \ref{ver1} and \ref{ver2}). Therefore, under this circumstance, its orientation need to be adjusted. Figure \ref{adjustmentidea} displays the idea. Starting at two blue points ($adl$ and $adr$), both of YuMi's grippers will move towards the orange points ($adll$ and $adrr$) simultaneously to perform the adjustment. After that, they will follow the previous paths and return to blue points in order to avoid potential collisions with the shoe. The ideal shoe pose after adjustment is shown on the right hand side.
@@ -96,20 +87,20 @@ In the beginning, the shoe can be placed on the workbench in different direction
 \centering
 \subfigure[Before adjustment]{\includegraphics[width = 0.49\columnwidth]{Implementation/cv/adjustmentidea.png}}
 \subfigure[After Adjustment]{\includegraphics[width = 0.49\columnwidth]{Implementation/cv/adjustmentidea2.png}}
-\caption{The shoe pose adjustment idea}
+\caption{The concept for shoe pose adjustment}
 \label{adjustmentidea}
 \end{figure}
 
-To achieve this, the 2D pixel coordinates of these blue and orange points will firstly be documented, which can be determined based on the YOLO bounding box. However, YuMi still needs to know the real-world 3D locations of these points in order to move its grippers to the correct places. This can be computed by looking at the camera registered point cloud topic, which is shown in Figure \ref{ptcloud}. For ASUS Xtion, the topic name is $/camera/depth\_registered/points$. While ZED Mini uses $/zed\slash zed\_node\slash point\_cloud\slash cloud\_registered$.
+To achieve this, the 2D pixel coordinates of these blue and orange points will firstly be documented, which can be determined based on the YOLO bounding box. However, YuMi still needs to know the real-world 3D locations of these points in order to move its grippers to the correct places. This can be computed by looking at the camera registered point cloud topic. For ASUS Xtion, the topic name is $/camera/depth\_registered/points$ (see Figure \ref{ptcloud}). While ZED Mini uses $/zed\slash zed\_node\slash point\_cloud\slash cloud\_registered$ (see Figure \ref{ptcloudzed}).
 
 \begin{figure}[H]
 \centering
-\subfigure[RGB raw image]{\includegraphics[width = 0.45\columnwidth, height=50mm]{Implementation/cv/rgbpt.png}}
-\subfigure[Depth registered point clouds]{\includegraphics[width = 0.45\columnwidth, height=50mm]{Implementation/cv/ptcloud.png} \label{ptcloud}}
-\caption{Messages of different ASUS Xtion camera topics}
+\subfigure[RGB  image]{\includegraphics[height=4.3cm,keepaspectratio]{Implementation/cv/rgbptzed.jpg}}
+\subfigure[Depth registered point clouds]{\includegraphics[height=4.3cm,keepaspectratio]{Implementation/cv/ptcloudzed.jpg} \label{ptcloudzed}}
+\caption{Messages of different ZED Mini camera topics}
 \end{figure}
 
-Each point cloud contains the real-world $xyz$ readings relative to the camera and RGB information. Take ASUS Xtion for example, since its image resolution is $640 \times 480$, there are total $307200$ points for each image. Sometimes, the $xyz$ readings of some points might be $nan$, which are not reliable and should be ignored. Using those 2D pixel positions calculated previously, $pc2.read\_points$ function helps find the corresponding point cloud and return the reading.
+Each point cloud contains the real-world $xyz$ location relative to the camera frame and RGB information. Take ASUS Xtion for example, since its image resolution is $640 \times 480$, there are total $307200$ points for each image. Sometimes, the $xyz$ readings of some points might be $nan$, which are not reliable and should be ignored. Using those 2D pixel positions calculated previously, $pc2.read\_points$ function helps find the corresponding point cloud and return the reading.
 
 \begin{minted}[frame=single, framesep=1.5mm, baselinestretch=1, fontsize=\footnotesize, linenos, breaklines]{python}
 adr = list(pc2.read_points(data, field_names = ('x', 'y', 'z'), skip_nans = True, uvs = [(self.adr_x, self.adr_y)]))
@@ -121,14 +112,14 @@ if len(adr) > 0:
     #self._tfpub.sendTransform((adr), tf.transformations.quaternion_from_euler(0, 0, 0), rospy.Time.now(), "adr", '/zed_left_camera_frame') #if using ZED Mini
 \end{minted}
 
-The above code example is for calculating the real-word location of $adr$. The output reading of $pc2.read\_points$ is based on camera frame and camera axes. However, in order to move YuMi's arm around this location in later stages, the reading needs to be related to YuMi frame $yumi\_base\_link$ and using YuMi axes format. For ZED Mini, its axes are the same as YuMi's, so the reading format does not need to be modified (see line 5). While for ASUS Xtion, they are different and the corresponding adjustment is shown in line 4 of the code. 
+The above code example is for calculating the real-word location of $adr$. Since the $field\_names$ in $pc2.read\_points$ function is defined as $x, y, z$, the only location information will be output, which is based on camera frame and camera axes. However, in order to move YuMi's arm around this location in later stages, the reading needs to be related to YuMi frame $yumi\_base\_link$ and using YuMi axes format. For ZED Mini, its axes are the same as YuMi's, so the reading format does not need to be modified (see line 5). While for ASUS Xtion, they are different and the corresponding adjustment is shown in line 4 of the code. 
 
-As mentioned in Analysis and Design Chapter, $TF$ keeps the relationship between frames and will used for the frame conversion. The location $adr$ is firstly published using $sendTransdorm$ function, as a transform from camera frame $camera\_link$ or $zed\_left\_camera\_frame$ (see line 6 and 7). Then function $lookupTransform$ can then be used to obtained the location based on frame $yumi\_base\_link$, which will be further discussed in next Section \ref{adj} together with detailed adjustment implementation. Figure \ref{3dadj} shows these frames visualized in Rviz.
+As mentioned in Analysis and Design Chapter, $TF$ keeps the relationship between frames and will used for the frame conversion. The location $adr$ is firstly published using $sendTransdorm$ function, as a transform from camera frame $camera\_$ $link$ or $zed\_left\_camera\_frame$ (see line 6 and 7). Then $lookupTransform$ function can then be used to obtained the location based on frame $yumi\_base\_link$, which will be further discussed in next Section \ref{adj} together with detailed adjustment implementation. Figure \ref{3dadj} shows these frames visualized in Rviz.
 
 \begin{figure}[H]
 \centering
 \subfigure[Real-world shoe placement]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dadj.jpg}}
-\subfigure[The frame relationships in Rviz]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/adjrviz.png}}
+\subfigure[The frame relationships in Rviz, where $adr$, $adrr$, $adl$, $adll$ are the four required adjustment locations]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/adjrviz.png}}
 \caption{Example of required locations for shoe pose adjustment}
 \label{3dadj}
 \end{figure}
@@ -137,8 +128,8 @@ After adjustment, the direction of the shoe and the interested shoe hole is cons
 
 \begin{figure}[H]
 \centering
-\includegraphics[width = 0.5\columnwidth]{Implementation/cv/rangetoward.jpg}
-\caption{Ideal range of orientations for the shoe hole after adjustment}
+\includegraphics[width = 0.4\columnwidth]{Implementation/cv/rangetoward.jpg}
+\caption{Ideal range of orientations for the shoe hole after adjustment. The red arrow represents current orientation of the shoe. Blue arrows indicate the possible range.}
 \label{rangeshoe}
 \end{figure}
 
