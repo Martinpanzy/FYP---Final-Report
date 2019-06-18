@@ -13,6 +13,7 @@
 \usepackage{graphicx}
 \usepackage{natbib}
 \usepackage{setspace}
+\PassOptionsToPackage{hyphens}{url}
 
 %% Sets page size and margins
 \usepackage[a4paper,top=3cm,bottom=3cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
@@ -28,8 +29,6 @@
 \onehalfspacing
 \setlength{\parskip}{1em}
 \begin{abstract}
-%The abstract is a very brief summary of the report’s contents. Somebody unfamiliar with your project should have a good idea of what it’s about having read the abstract alone and will know whether it will be of interest to them. The abstract should (very concisely) summarise the topic, content and conclusions of the project. Abstracts can vary in length from 50 words up to at most 200 words. They are more concise than executive summaries.
-
 Robot motion planning based on computer vision is an important topic in the field of AI. While the majority applications allow for relatively large manipulation tolerance, such as pick and place. 
 
 In this project, I address the precise AI planning and control problem of putting shoelaces on a marked shoe using a bimanual robot, ABB YuMi, and an external camera. Starting with one arm holding one end of the shoelace, YuMi can adjust the orientation of the shoe if necessary, then pass the shoelace through the shoe hole. As an extension, YuMi will also plan sequences of trajectories for completing more holes up to finishing the whole shoe.
@@ -52,7 +51,7 @@ Thanks gym, sunshine, coffee, movies, and London!
 Finally, thanks my brain!
 \end{abstract}
 
-%\hypersetup{linkcolor=black}
+
 \setlength{\parskip}{0em}
 \tableofcontents
 \newpage
@@ -63,13 +62,10 @@ Finally, thanks my brain!
 \input{introduction/introduction.tex}
 \input{background/background.tex}
 \input{RequirementsCap/requirementscap.tex}
-
-% The central part of the report usually consists of three or four chapters detailing the technical work undertaken during the project. 
 \input{AnalysisDesign/analysisdesign.tex}
 \input{Implementation/implement_cv.tex}
 \input{Implementation/implement_mp.tex}
 \input{TaR/tar.tex}
-%\input{evaluation/Eval.tex}
 \input{conclusion/conclusion.tex}
 \input{Futurework/future.tex}
 \input{UserGuide/userguide.tex}
@@ -78,7 +74,5 @@ Finally, thanks my brain!
 \bibliographystyle{plainnat}
 \bibliography{bibs/sample}
 \input{appendix/figtab.tex}
-
-%\input{Issues/issues.tex}
 
 \end{document}
