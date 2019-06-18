@@ -50,7 +50,7 @@
 \subfigure[Gaussian filter]{\includegraphics[width = 0.24\columnwidth]{Implementation/cv/g6.png}}
 \subfigure[Median filter]{\includegraphics[width = 0.24\columnwidth]{Implementation/cv/m6.png}}
 \subfigure[Normalized Box filter]{\includegraphics[width = 0.24\columnwidth]{Implementation/cv/b6.png}}
-\caption{Image processing of extracted shoe region using ASUS Xtion camera. Each column uses one specific type of blurred filter. For each column, from top to bottom, each image is, in turn, the original image labeled with detected contour area, smoothed image after applying the linear filter, image of HSV color space of the smoothed image, mask for color 'blue', mask after $erode$ function, and the final mask after $dilate$ function}
+\caption{Image processing of extracted shoe region using ASUS Xtion camera. Each column uses one specific type of blurred filter. For each column, from top to bottom, each image is, in turn, the original cropped image labeled with detected contour area and its centroid coordinate, smoothed image after applying the linear filter, the smoothed image in HSV color space, mask for color 'blue', mask after $erode$ function, and the final mask after $dilate$ function.}
 \label{asusfilter}
 \end{figure}
 
@@ -60,11 +60,11 @@
 \begin{tabular}{||c||c|c||}
 \hline
 Waypoints & Left arm & Right arm \\ \hline\hline
-$1$ & $[adl\_x, adl\_y, 0.3, -\frac{\pi}{4}, \pi, \pi]$ & $[adr\_x, adr\_y, 0.3, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
-$2$ & $[adl\_x, adl\_y, 0.1, -\frac{\pi}{4}, \pi, \pi]$ & $[adr\_x, adr\_y, 0.1, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
-$3$ & $[adll\_x, adll\_y, 0.1, -\frac{\pi}{4}, \pi, \pi]$ & $[adrr\_x, adrr\_y, 0.1, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
-$4$ & $[adl\_x, adl\_y, 0.1, -\frac{\pi}{4}, \pi, \pi]$ & $[adr\_x, adr\_y, 0.1, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
-$5$ & $[adl\_x, adl\_y, 0.3, -\frac{\pi}{4}, \pi, \pi]$ & $[adr\_x, adr\_y, 0.3, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
+$(a)$ & $[adl\_x, adl\_y, 0.3, -\frac{\pi}{4}, \pi, \pi]$ & $[adr\_x, adr\_y, 0.3, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
+$(b)$ & $[adl\_x, adl\_y, 0.1, -\frac{\pi}{4}, \pi, \pi]$ & $[adr\_x, adr\_y, 0.1, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
+$(c)$ & $[adll\_x, adll\_y, 0.1, -\frac{\pi}{4}, \pi, \pi]$ & $[adrr\_x, adrr\_y, 0.1, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
+$(d)$ & $[adl\_x, adl\_y, 0.1, -\frac{\pi}{4}, \pi, \pi]$ & $[adr\_x, adr\_y, 0.1, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
+$(e)$ & $[adl\_x, adl\_y, 0.3, -\frac{\pi}{4}, \pi, \pi]$ & $[adr\_x, adr\_y, 0.3, \frac{\pi}{4}, \pi, \pi]$ \\ \hline
 \end{tabular}}
 \caption{Shoe pose adjustment waypoints for both of YuMi's end-effectors}
 \label{adjustwaypoints}

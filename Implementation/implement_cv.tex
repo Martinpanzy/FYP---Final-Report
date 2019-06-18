@@ -118,9 +118,9 @@ As mentioned in Analysis and Design Chapter, $TF$ keeps the relationship between
 
 \begin{figure}[H]
 \centering
-\subfigure[Real-world shoe placement]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dadj.jpg}}
+\subfigure[Real-world shoe placement. The shoe is vertically placed, thus adjustment is required]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dadj.jpg}}
 \subfigure[The frame relationships in Rviz, where $adr$, $adrr$, $adl$, $adll$ are the four required adjustment locations]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/adjrviz.png}}
-\caption{Example of required locations for shoe pose adjustment}
+\caption{Example of required locations for shoe pose adjustment while using ZED Mini}
 \label{3dadj}
 \end{figure}
 
@@ -137,7 +137,7 @@ After adjustment, the direction of the shoe and the interested shoe hole is cons
 \section{3D Location of Shoe Hole} \label{3dlocationestimation}
 Since the shoe is marked, shoe hole detection can be achieved with color detection. Due to the fact that there are other objects on the workbench and color tracking is very sensitive to light condition, perform this technique using entire image cannot provide accurate results. Therefore, the image will firstly be cropped using $xmin$, $xmax$, $ymin$, and $ymax$ value computed in section \ref{shoedetection}. Color detection only applies to the cropped region of interest.
 
-The image of shoe always contains a certain level of high frequency noise. Various blurring and smoothing techniques have been tried to tackle this issue and their results are shown in Figure \ref{zedfilter} second line. The blurred image is then converted to HSV color space. After that, a mask for color 'blue' is constructed using its predefined lower and color boundaries. The $erode$ and $dilate$ functions are then performed to remove any small blobs remain in the mask. It can be discovered that basically all the four filter can provide a reasonable mask of shoe hole area.
+The image of shoe always contains a certain level of high frequency noise. Various blurring and smoothing techniques have been tried to tackle this issue and their results are shown in Figure \ref{zedfilter} second line when using ZED Mini camera (see Figure \ref{asusfilter} for ASUS Xtion). The blurred image is then converted to HSV color space. After that, a mask for color 'blue' is constructed using its predefined lower and color boundaries. The $erode$ and $dilate$ functions are then performed to remove any small blobs remain in the mask. It can be discovered that basically all the four filter can provide a reasonable mask of shoe hole area.
 
 \begin{figure}
 \centering
@@ -170,7 +170,7 @@ The image of shoe always contains a certain level of high frequency noise. Vario
 \subfigure[Gaussian filter]{\includegraphics[width = 0.24\columnwidth]{Implementation/cv/zg6.png}}
 \subfigure[Median filter]{\includegraphics[width = 0.24\columnwidth]{Implementation/cv/zm6.png}}
 \subfigure[Normalized Box filter]{\includegraphics[width = 0.24\columnwidth]{Implementation/cv/zb6.png}}
-\caption{Image processing of extracted shoe region using ZED Mini. Each column uses one specific type of blurred filter. For each column, from top to bottom, each image is, in turn, the original image labeled with detected contour area and its centroid coordinates, smoothed image after applying the linear filter, image of HSV color space of the smoothed image, mask for color 'blue', mask after $erode$ function, and the final mask after $dilate$ function}
+\caption{Image processing of extracted shoe region using ZED Mini. Each column uses one specific type of blurred filter. For each column, from top to bottom, each image is, in turn, the original cropped image labeled with detected contour area and its centroid coordinate, smoothed image after applying the linear filter, the smoothed image in HSV color space, mask for color 'blue', mask after $erode$ function, and the final mask after $dilate$ function.}
 \label{zedfilter}
 \end{figure}
 
@@ -178,39 +178,39 @@ The contour(s) of blue area(s) are then calculated. If at least one contour is d
 
 \begin{figure}[H]
 \centering
-\subfigure[Real-world shoe placement]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dposw.jpg}}
-\subfigure[The frame relationships in Rviz]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dpos.jpg} \label{3dpos}}
-\caption{Example of shoe hole 3D location estimation using ZED Mini}
+\subfigure[Real-world shoe placement. The shoe is not vertically placed, location should be computed]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dposw.jpg}}
+\subfigure[The frame relationships in Rviz, where 3D location of shoe hole is published]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dpos.jpg} \label{3dpos}}
+\caption{Example of shoe hole 3D location estimation while using ZED Mini}
 \end{figure}
 
-Once the 2D pixel position is computed, same approach as in Section \ref{shoeadjust} will be used to obtain its 3D real-world location $shoe\_hole$ referenced to camera frame. Related code can be found in !!!!!!. To improve its stability, 10 readings of $shoe\_hole$ will be recorded and averaged before publishing to $TF$. Figure \ref{3dpos} is the example visualized in Rviz.
+Once the 2D pixel position is computed, same approach as in Section \ref{shoeadjust} will be used to obtain its 3D real-world location $shoe\_hole$ referenced to camera frame. To improve its stability, 10 readings of $shoe\_hole$ will be recorded and averaged out before publishing to $TF$. Figure \ref{3dpos} is the frames example visualized in Rviz.
 
 \section{3D Orientation of Shoe Hole} \label{3DOrientationofShoeHole}
 Due to the fact that the surrounding area of the shoe hole can be regarded as a plane, as shown in Figure \ref{plane}, its 3D orientation is the same as that of the plane. In addition, the orientation of a plane can be obtained from its plane equation. For a plane $Ax + By + Cz = D$, its normal vector is $n = Ai + Bj + Ck$.
 
-To achieve the shoelace insertion task, a pre-insertion point called $pre\_put$ need to be defined along the normal vector direction. With this, YuMi will move its gripper to this location, then align the gripper with the normal vector, and finally move to $shoe\_hole$. After insertion, it will follow the previous path and return to $pre\_put$.
+Recall the project requirement, the shoelace is held by YuMi's gripper before the first insertion. In this project, the direction of the shoelace is defined to be aligned with the direction of the gripper in the beginning. Therefore, to achieve the shoelace insertion task, a pre-insertion point called $pre\_put$ needs to be defined along the normal vector direction. With this, YuMi will move its gripper to this location, then align the gripper with the normal vector, and finally move to $shoe\_hole$. After insertion, it will follow the previous path and return to $pre\_put$.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width = 0.7\columnwidth]{Implementation/cv/plane.png}
-\caption{The surrounding area of the shoe hole. The orientation of the orange plane is approximately same as that of the shoe hole within it.}
+\caption{The surrounding areas of the shoe holes are labeled in orange. The orientation of the orange plane is approximately same as that of the shoe hole within it.}
 \label{plane}
 \end{figure}
 
-As mentioned in Background Chapter, by extracting all the surrounding point clouds of the shoe hole, RANSAC can then be applied to estimate the plane parameters A, B, C, and D, while ignoring the outliers. Here, the reasonable surrounding area is the contour area detected in Section \ref{3dlocationestimation}. In other words, it consists of all the white points in the final mask image shown in Figure \ref{zedfilter}. For ASUS Xtion camera, these points need to be converted to YuMi's axis format as before. Taking these points as input, following settings are used for RANSAC. Notice that the number of hypothetical inliers is different for these two cameras due to their different resolutions.
+As mentioned in Background Chapter, by extracting all the surrounding point clouds of the shoe hole, RANSAC can then be applied to estimate the plane parameters A, B, C, and D, while ignoring the outliers. Here, the reasonable surrounding area is the blue contour area detected in Section \ref{3dlocationestimation}. In other words, it consists of all the white points in the final mask image shown in Figure \ref{zedfilter}. For ASUS Xtion camera, these points need to be converted to YuMi's axis format as before. Taking these points as input, following settings are used for RANSAC. Notice that the number of hypothetical inliers varies with camera resolution.
 
 \begin{table}[H]
 \centering
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{||c||c|c|c||}
 \hline
-Camera & Number of hypothetical inliers & Distance threshold & Max iterations \\ \hline\hline
-ASUS Xtion & 20 & 0.01 & 200 \\ \hline
+Camera resolution & No. of hypothetical inliers & Distance threshold & Max iterations \\ \hline\hline
+ASUS Xtion $640 \times 480$ & 20 & 0.01 & 200 \\ \hline
 ZED Mini 720p & 60 & 0.01 & 200 \\ \hline
 ZED Mini 1080p & 300 & 0.01 & 200 \\ \hline
 \end{tabular}
 }
-\caption{RANSAC parameters setting}
+\caption{RANSAC parameters setting for different resolutions}
 \label{ransacsetting}
 \end{table}
 
@@ -220,17 +220,17 @@ Another issue of this approach is that $pre\_put$ has volatility, especially for
 
 \begin{figure}[H]
 \centering
-\subfigure[Real-world shoe placement]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dposwa.jpg} \label{xaxis}}
-\subfigure[The frame relationships in Rviz]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dori.jpg}\label{3dori}}
+\subfigure[Real-world shoe placement. RGB color labelled on the camera represents its XYZ axis respectively.]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dposwa.jpg} \label{xaxis}}
+\subfigure[The frame relationships in Rviz. The short line between $pre\_put$ and $shoe\_hole$ is the calculated normal vector.]{\includegraphics[height=6cm,keepaspectratio]{Implementation/cv/3dori.jpg}\label{3dori}}
 \caption{Example of shoe hole 3D orientation estimation using ZED Mini}
 \end{figure}
 
-To further improve the stability and accuracy of the results, every 50 vector coefficients will be recorded when using ASUS Xtion, every 10 vector coefficients will be documented if using ZED Mini, and further data processing will be performed. The following two techniques have been experimented.
+To further improve the stability and accuracy of the results, every 50 vector coefficients will be recorded when using ASUS Xtion, every 10 vector coefficients will be documented if using ZED Mini 720p and 3 vector parameters for 1080p, and further data processing will be performed. The following two techniques have been experimented.
 
 \begin{itemize}
     \item \textbf{K-means Clustering:} K-means can partition these $pre\_put$ into k clusters where each point belongs to the cluster with the nearest mean. The cluster with the most number of points will be treated as the correct one and the cluster mean is the final $pre\_put$s. However, for this approach, the number of cluster need to be defined at first. Different settings give very different results even under same environments. Once the selected cluster is wrong, the resulting point can be ridiculous sometimes, which is unreliable.
     
-    \item \textbf{Average:} Considering the majority of calculated points are reliable, averaging these 50 $pre\_put$ should give a reasonable answer. This method has been experimented and proven to be effective.
+    \item \textbf{Average:} Considering the majority of calculated points are reliable, averaging these $pre\_put$s should give a reasonable answer. This method has been experimented and proven to be effective.
 \end{itemize}
 
 The final $pre\_put$ are then be published to $TF$ topic as a transform from frame $shoe\_hole$. Figure \ref{3dori} illustrates all the frames used up to this stage.
