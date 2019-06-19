@@ -1,17 +1,49 @@
 \chapter{User Guide}
-This guide aims to support anyone who would like to use the delivered system or continue this project. The Github repository is \url{https://github.com/Martinpanzy/FYP-Yumi}.
+%put in here maybe pseudocode, or configuration file specifications etc.
+This guide aims to support anyone who would like to use the delivered system or continue this project. Before launching this project, following packages must be installed: \texttt{ROS Kinetic}, \texttt{openni}, \texttt{zed-ros-wrapper}, \texttt{python-pcl}, \texttt{darknet\_ros}, \texttt{YuMi-ros-wrapper}, and \texttt{MoveIt!}. Some packages have their own dependencies. The detailed installation instructions can be found in the project Github repository \url{https://github.com/Martinpanzy/FYP-Yumi}.
 
-The following packages must be installed before launching this project: \textbf{ROS Kinetic}, \textbf{OPENNI}, \textbf{ZED ROS Wrapper}, \textbf{Python PCL}, \textbf{YOLO ROS}, \textbf{YuMi ROS Wrapper}, and \textbf{MoveIt!}. Detailed installation instructions can be found 
+The pose relationships between the two cameras and YuMi are defined in the YuMi launch files. The \texttt{demo.launch} is for simulation in Rviz, \texttt{yumi.launch} is for launching the real robot. 
 
-%\section{Dependencies}
+For ASUS Xtion camera, the current relationship is defined as:
+\begin{minted}[frame=single, framesep=1.5mm, baselinestretch=1, fontsize=\footnotesize, linenos, breaklines]{xml}
+<node pkg="tf" type="static_transform_publisher" name="rgb_tf" required="true" args="0.2013 0.0641 0.6934 -0.0238 0.4836 -0.0141 0.875 /yumi_base_link /camera_link 100"/>
+\end{minted}
 
-%install/ configure/ use
-%\section{ROS Packages}
+For ASUS Xtion camera, the current relationship is defined as:
+\begin{minted}[frame=single, framesep=1.5mm, baselinestretch=1, fontsize=\footnotesize, linenos, breaklines]{xml}
+<node pkg="tf" type="static_transform_publisher" name="rgb_tf" required="true" args="0.2263 0.0541 0.7134 -0.0238 0.4836 -0.0141 0.875 /yumi_base_link /zed_left_camera_frame 100"/>
+\end{minted}
 
-%\section{Usage}
+The resolution and other settings of ZED Mini camera can be modified in the \texttt{common.yaml} file in the \texttt{zed-ros-wrapper} package. For YOLO detection, different versions can be used by modifying the \texttt{yolo.yaml} file in the \texttt{config} folder of \texttt{darknet\_ros} package and adding corresponding \texttt{.cfg} and \texttt{.weights} files to \texttt{yolo\_network\_config} folder. For more detail, please see the Github repository.
 
-%\section{Code}
+The computer vision and motion planning implementation methods introduced in this report are included in folder \texttt{shoehole} and \texttt{shoelace} respectively. Within these two folders:
 
+\begin{itemize}
+    \item \texttt{shoe\_asus.py:} provides functions of shoe detection, calculation of required locations for shoe pose adjustment, 6D shoe hole pose estimation etc using ASUS Xtion camera.
+    \item \texttt{shoe\_zed.py:} provides same functionalities as shoe\_asus.py except it is for ZED Mini camera.
+    
+    \item \texttt{go\_asus.py:} provides shoe pose adjustment, shoelace insertion, grabbing, and pulling, as well as offset adjustment functionalities while using ASUS Xtion camera.
+    \item \texttt{go\_zed.py:} provides same function as go\_asus.py except it is for ZED Mini camera.
+    \item \texttt{yumi\_moveit\_utils.py:} includes several functions which are used in go\_asus.py and go\_zed.py.
+\end{itemize}
 
+To launch this project, YuMi need to be setup firstly. To do this, please follow these steps:
+\begin{enumerate}
+\item Turn on YuMi through the power switch.
+\item Connect the ethernet cable on XP23 port to your machine.
+\item Turn on motors on controller interface (toggle physical button with 3 horizontal lines on the FlexPendant).
+\item Switch to auto mode (toggle physical button with 2 horizontal lines on the FlexPendant).
+\item Point to main programs (toggle physical button with 1 horizontal line on the FlexPendant).
+\item Press the play button, both YuMi's grippers should then calibrate.
+\end{enumerate}
 
-%do not put full code, it will be seen as padding up the thesis for no reason. Point to a GitHub directory, and put in here maybe pseudocode, or configuration file specifications etc. 
+Once YuMi has been setup, the shoe can be placed on the workbench. Whne using ZED Mini camera, following command should be run from a terminal after \texttt{roscore}:
+\begin{enumerate}
+\item \texttt{roslaunch zed\_wrapper zedm.launch}: to launch ZED Mini camera
+\item \texttt{roslaunch darknet\_ros darknet\_ros.launch}: to launch YOLO detection
+\item \texttt{roslaunch yumi\_shoe yumi.launch}: to launch YuMi ROS Nodes
+\item \texttt{rosrun yumi\_shoe shoe\_zed.py}: to launch computer vision module
+\item \texttt{rosrun yumi\_shoe go\_zed.py}: to launch motion planning module
+\end{enumerate}
+
+YuMi will then starts to manipulate the shoe or shoelace depends on the pose of the shoe. For more information, please see the project Github repository.
