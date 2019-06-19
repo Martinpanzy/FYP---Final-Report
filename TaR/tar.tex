@@ -2,12 +2,12 @@
 
 In order to examine the performance and robustness of my approach, a serious of experiments target both individual functions and the integrated system has been conducted. The success rate and execution times are the two evaluation criteria.
 
-In all experiments, I utilize the same platform as shown in Figure \ref{5.1}. It consists of a YuMi robot and an external camera (ZED Mini or ASUS Xtion). In order to maximize the accuracy while ensuring a reasonable frame speed, ZED Mini camera with 1080p resolution was chosen for all the experiments in this chapter. The marked shoe was placed on the workbench within the area YuMi can reach. All tests were conducted under normal lighting conditions. 
+In all experiments, I utilize the same platform as shown in Figure \ref{5.1}. It consists of a YuMi robot and an external camera (ZED Mini or ASUS Xtion). In order to maximize the accuracy while ensuring a reasonable frame speed, ZED Mini camera with the 1080p resolution was chosen for all the experiments in this chapter. The marked shoe was placed on the workbench within the area YuMi can reach. All tests were conducted under normal lighting conditions. 
 
 \section{Computer Vision Module}
 The purpose of this part experiment is to assess the robustness of object detection and if the system can correctly compute adjustment locations or the centroid of the shoe hole.
 
-The marked shoe was placed at random location on the workbench for 10 times, together with other disturbing objects. For each location, I rotated the shoe 5 times to adjust its orientation. YOLO algorithm was used to perform shoe detection and return the prediction probability and the bounding box. Its performance is illustrated in Table \ref{yolotest}.
+The marked shoe was placed at a random location on the workbench for 10 times, together with other disturbing objects. For each location, I rotated the shoe 5 times to adjust its orientation. YOLO algorithm was used to perform shoe detection and return the prediction probability and the bounding box. Its performance is illustrated in Table \ref{yolotest}.
 
 \begin{table}[H]
 \centering
@@ -22,7 +22,7 @@ Shoe detection & 0.052s & 50/50 & 0.65 & 0.36 & 0.96 & 0.17 \\ \hline
 \label{yolotest}
 \end{table}
 
-As can be seen, the shoe detection system achieved 100\% success rate in these 50 tests with high detection speed. The relatively large fluctuation of detection probability is due to several low readings. These low probabilities are obtained when the shoe was placed on the edge of the image captured by the camera, such as Figure \ref{yolotestexample}. Overall, the performance of shoe detection is desirable. The prediction confidence can be further improved by retraining YOLO algorithm in the futhre.
+As can be seen, the shoe detection system achieved a 100\% success rate in these 50 tests with high detection speed. The relatively large fluctuation of detection probability is due to several low readings. These low probabilities are obtained when the shoe was placed on the edge of the image captured by the camera, such as Figure \ref{yolotestexample}. Overall, the performance of shoe detection is desirable. The prediction confidence can be further improved by retraining YOLO algorithm in the future.
 
 \begin{figure}[H]
 \centering
@@ -31,7 +31,7 @@ As can be seen, the shoe detection system achieved 100\% success rate in these 5
 \caption{The examples of YOLO testing environments}
 \end{figure}
 
-Once YOLO detects a shoe, the following two situations will occur. When the shoe is vertically placed, the algorithm should publish the required four adjustment locations ($adr$, $adrr$, $adl$, and $adll$) to $TF$. If the shoe is in a good orientation, the 2D pixel coordinate of centroid of the shoe hole is supposed to be reported. Following tests examined whether my approach can correctly classify the two situations and return the accurate results under the condition that YOLO correctly detected the shoe.
+Once YOLO detects a shoe, the following two situations will occur. When the shoe is vertically placed, the algorithm should publish the required four adjustment locations ($adr$, $adrr$, $adl$, and $adll$) to $TF$. If the shoe is in a good orientation, the 2D pixel coordinate of the centroid of the shoe hole is supposed to be reported. Following tests examined whether my approach can correctly classify the two situations and return the accurate results under the condition that YOLO correctly detected the shoe.
 
 \begin{table}[H]
 \centering
@@ -75,11 +75,11 @@ Shoe pose adjustment & 33s & 19/20 \\ \hline
 \label{adjusttest}
 \end{table}
 
-The execution time is measured from \ref{realadjust} (a) to \ref{realadjust} (e), including total 5 movements. In 19 runs, YuMi finished its job without failures. Only one adjustment failed: after YuMi adjusting the orientation of the shoe, both arms tried to return to home pose, which is the motion after \ref{realadjust} (e). At this time, the left arm of YuMi collided with the heel-cap of the shoe because the height of end-effector is relatively low. The robot then stopped operation due to this detected collision. After I modifying the height settings of pre-adjustment and post-adjustment pose, this problem was resolved and did not happen in later tests.
+The execution time is measured from \ref{realadjust} (a) to \ref{realadjust} (e), including total 5 movements. In 19 runs, YuMi finished its job without failures. Only one adjustment failed: after YuMi adjusting the orientation of the shoe, both arms tried to return to home pose, which is the motion after \ref{realadjust} (e). At this time, the left arm of YuMi collided with the heel-cap of the shoe because the height of end-effector is relatively low. The robot then stopped operation due to this detected collision. After modifying the height settings of pre-adjustment and post-adjustment pose, this problem was resolved and did not happen in later tests.
 
 
 \section{Insertion and Pulling of the Shoelace}
-So far, the accuracy of YuMi's approaching pose for shoelace insertion still depends on two factors: the accuracy of estimation of shoe hole orientation, and the offset adjustment. Together with my motion planning algorithm, the real shoe insertion tests were carried out 30 times based on the condition that the 2D pixel centroid of the shoe hole and its contour area are correctly computed. It was mentioned in the Requirement Capture Chapter that shoelace were assumed to be in YuMi gripper at the beginning. Therefore, in this experiment, I manually put the shoelace in the gripper and aligned their directions at initial stage (Figure \ref{putexample} (a)) every time.
+So far, the accuracy of YuMi's approaching pose for shoelace insertion still depends on two factors: the accuracy of estimation of shoe hole orientation, and the offset adjustment. Together with my motion planning algorithm, the real shoe insertion tests were carried out 30 times based on the condition that the 2D pixel centroid of the shoe hole and its contour area are correctly computed. It was mentioned in the Requirement Capture Chapter that shoelace was assumed to be in YuMi gripper at the beginning. Therefore, in this experiment, I manually put the lace in the gripper and aligned their directions at the initial stage (Figure \ref{putexample} (a)) every time.
 
 This experiment was divided into three levels: pass the shoe hole with $2.5mm$ radius, pass the shoe hole with $4.0mm$ radius, and pass the shoe hole with $7.5mm$ radius. The results are shown in Table \ref{insert}, where the execution time is recorded between Figure \ref{putexample} (a) and Figure \ref{putexample} (e), a total of three actions. 
 
@@ -96,9 +96,9 @@ Shoelace insertion & 9.65s & 30/30 & 25/30 & 11/30 \\ \hline
 \label{insert}
 \end{table}
 
-It can be seen that the insertion success rate reach 100\% for relatively large hole, with $7.5mm$ radius. For normal $4mm$ radius shoe hole, YuMi successfully completed its job for 25 times out of 30 runs. For the 5 failure cases, two are because the orientation of shoelace was not perfectly aligned with the gripper, when I manually put it. It resulted in the end point of the gripper touched the hole but the shoelace failed to pass through. One failure is because Yumi's gripper came loose as it rotated. The final two turnovers are due to inaccurate computation of pose $shoe\_hole$, when the shoe was placed in a relative bad angle.
+It can be seen that the insertion success rate reach 100\% for the relatively large hole, with $7.5mm$ radius. For regular $4mm$ radius shoe hole, YuMi completed its job for 25 times out of 30 runs. For the 5 failure cases, two are because the orientation of shoelace was not perfectly aligned with the gripper when I manually put it. It resulted in the end point of the gripper touched the hole, but the lace failed to pass through. One failure is because Yumi's gripper came loose as it rotated. The final two turnovers are due to the inaccurate computation of pose $shoe\_hole$, when the shoe was placed in a relatively bad angle.
 
-As for $2.5mm$ shoe hole, there is more than half runs failed. Considering the diameter of the shoelace I used is approximately $2mm$, the movement must be extremely accurate to complete hole with this size. Also, the robot has a position tolerance of $1mm$, which introduced potential motion offset. It shows that my algorithm still has room to improve, which will be further discussed in Future Work Chapter.
+As for $2.5mm$ shoe hole, there is more than half runs failed. Considering the diameter of the shoelace I used is approximately $2mm$, the movement must be extremely accurate to complete the hole with this size. Also, the robot has a position tolerance of $1mm$, which introduced potential motion offset. It shows that my algorithm still has room to improve, which will be further discussed in Future Work Chapter.
 
 The shoelace grabbing test is based on the same condition as for shoelace insertion. In addition, I manually passed the shoelace along the normal vector direction of the hole. This experiment was carried out 20 times, whose operation time is between \ref{pickexample} (a) and \ref{pickexample} (e), a total of three movements. 
 
@@ -113,10 +113,10 @@ Shoelace grabbing & 9.35s & 17/20 \\ \hline
 \label{pull}
 \end{table}
 
-Table \ref{pull} are the testing results. In the three turnovers, two are because the yaw rotation of end-effector was not perfectly parallel to the tongue, which results in slight collision between the finger and the lace guard. The final failure is because the black finger (the one 3D printed) suddenly broke when it tried to close and grab the shoelace. That finger was 3D printed again and reattached to YuMi.
+Table \ref{pull} are the testing results. In the three turnovers, two are because the yaw rotation of end-effector was not perfectly parallel to the tongue, which results in a slight collision between the finger and the lace guard. The final failure is because the black finger (the one 3D printed) suddenly broke when it tried to close and grab the shoelace. That finger was 3D printed again and reattached to YuMi.
 
 \section{Integrated System Performance}
-After testing every individual functionality, the performance of the integrated system was then examined. This experiment starts from randomly placing the shoe on the workbench, YuMi should adjust the shoe pose if necessary. Once the shoe is in a good position, the shoelace was manually put in and aligned with the YuMi gripper. After that, YuMi are supposed to pass it into the shoe hole and pull it out to stage of Figure \ref{pickexample} (d). The shoe hole used in this experiment has $4mm$ radius.
+After testing every individual functionality, the performance of the integrated system was then examined. This experiment starts from randomly placing the shoe on the workbench, YuMi should adjust the shoe pose if necessary. Once the shoe is in a good position, the shoelace was manually put in and aligned with the YuMi gripper. After that, YuMi is supposed to pass it into the shoe hole and pull it out to the stage of Figure \ref{pickexample} (d). The shoe hole used in this experiment has $4mm$ radius.
 
 \begin{table}[H]
 \centering
@@ -135,9 +135,9 @@ Good position & 40s & 20/20 & -- & 17/20 & 15/17 \\ \hline
 
 Table \ref{integratedtest} illustrates the final results. In all 40 runs, the detection algorithm can successfully detect the shoe and return either the location of the shoe hole or the adjustment points. When the initial position of the shoe is not ideal, the system succeeded to adjust the shoe pose for 19 times out of 20. That one failure is because both grippers were relatively close to the vertical middle of the shoe during the adjustment, which resulted in when they both moved towards the horizontal middle, YuMi suddenly entered the motion supervision mode. After that, I modified my algorithm to let the adjustment points ($adr$, $adl$) more separate to each other, based on the condition that the orientation of the shoes can still be adjusted. 
 
-There are 5 failures for shoelace insertion, 4 of which were due to the inaccurate estimation of $shoe\_hole$ location. The maximum error between the predicted and actual location was $3mm$, which again proves the system can successfully handle $7.5mm$ radius shoe hole. The other failure is because motion planning algorithm failed to provide a valid path, YuMi did not move but return to cal pose directly. However, in reality, there was an available path for YuMi to move from the start configuration to the goal configuration. This problem is due to the default planner ID cannot provide suitable path within the number of trials. The system ended up using $ESTkConfigDefault$ as the motion planner and this problem did not happen in the later testings.
+There are 5 failures for shoelace insertion, 4 of which were due to the inaccurate estimation of $shoe\_hole$ location. The maximum error between the predicted and the actual location was $3mm$, which again proves the system can successfully handle $7.5mm$ radius shoe hole. The other failure is because the motion planning algorithm failed to provide a valid path, YuMi did not move but return to cal pose directly. However, in reality, there was an available path for YuMi to move from the start configuration to the goal configuration. This problem is due to the default planner ID cannot provide a suitable path within the number of trials. The system ended up using $ESTkConfigDefault$ as the motion planner and this problem did not happen in the later testings.
 
-As for shoelace pulling section, there are 3 turnovers. One is because the shoelace slipped out of the shoe hole after it being successfully inserted. For the other two failures, the head of the shoelace was dragged down by its weight, so that the gripper missed it. These problems were considered to be tackled by keeping the right arm at insertion pose while letting the left arm to grab the shoelace. However, implementation has been tried but there would always be collision between the two grippers when planning the path due to their sizes. 
+As for shoelace pulling section, there are 3 turnovers. One is because the shoelace slipped out of the shoe hole after it is successfully inserted. For the other two failures, the head of the lace was dragged down by its weight, so that the gripper missed it. These problems were considered to be tackled by keeping the right arm at insertion pose while letting the left arm to grab the shoelace. However, implementation has been tried but there would always be a collision between the two grippers when planning the path due to their sizes. 
 
 \begin{figure}
 \centering
@@ -164,4 +164,4 @@ As for shoelace pulling section, there are 3 turnovers. One is because the shoel
 \label{integratedtestfig}
 \end{figure}
 
-Figure \ref{integratedtestfig} shows a series of YuMi manipulation photos captured by the external camera ZED Mini. In this example the shoe pose has been successfully adjusted and the shoelace were inserted and pulled out.
+Figure \ref{integratedtestfig} shows a series of YuMi manipulation photos captured by the external camera ZED Mini. In this example, the shoe pose has been successfully adjusted and the shoelace was inserted and pulled out.

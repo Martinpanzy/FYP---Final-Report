@@ -3,7 +3,7 @@
 This chapter will cover the implementation methods on computer vision side of this project using either ASUS Xtion or ZED Mini. By adjusting the settings introduced in this chapter, the algorithm works for both cameras. User Guide Chapter includes corresponding code information.
 
 \section{Camera Setup}
-The dependency package allow specific camera to communicate with ROS is shown in Table \ref{camerapackage}, which contains corresponding launch files. Entering the launch command in the terminal can start the package driver. After that, a list of camera topics including RGB, depth, and point-clouds etc can be subscribed for further processing. 
+The dependency package allows a specific camera to communicate with ROS is shown in Table \ref{camerapackage}, which contains corresponding launch files. Entering the launch command in the terminal can start the package driver. After that, a list of camera topics including RGB, depth, and point-clouds etc can be subscribed for further processing. 
 
 \begin{table}[H]
 \centering
@@ -19,7 +19,7 @@ ZED Mini & $zed-ros-wrapper$ & $roslaunch$ $zed\_wrapper$ $zedm.launch$ \\ \hlin
 \label{camerapackage}
 \end{table}
 
-In ROS, video streams are represented by these sequences of images. If user would like to use ROS images in conjunction with OpenCV, $CvBridge$ package provides the converting interface, which is used in this project as well.
+In ROS, video streams are represented by these sequences of images. If the user would like to use ROS images in conjunction with OpenCV, $CvBridge$ package provides the converting interface, which is used in this project as well.
 
 \begin{figure}[H]
 \centering
@@ -44,7 +44,7 @@ ZED Mini & /zed\_left\_camera\_frame & {[}0.2263, 0.0541, 0.7134, -0.0238, 0.483
 \end{table}
 
 \section{Shoe Detection} \label{shoedetection}
-As mentioned in Background Chapter, YOLO9000 will be used for shoe detection. \citep{bjelonicYolo2018} developed the YOLO ROS interface called $darknet\_ros$, which supports using YOLO on both CPU and GPU. This package depends on OpenCV, boost (C++ library) and CUDA (if use Nvidia GPU for faster processing). Detailed installation and setup instructions can be found in User Guide Chapter. 
+As mentioned in Background Chapter, YOLO9000 will be used for shoe detection. \citep{bjelonicYolo2018} developed the YOLO ROS interface called $darknet\_ros$, which supports using YOLO on both CPU and GPU. This package depends on OpenCV, boost (C++ library) and CUDA (if use Nvidia GPU for faster processing). For detailed installation and setup instructions, please refer to the User Guide Chapter. 
 
 \begin{figure}[H]
 \centering
@@ -53,7 +53,7 @@ As mentioned in Background Chapter, YOLO9000 will be used for shoe detection. \c
 \label{yolofolder}
 \end{figure}
 
-Figure \ref{yolofolder} shows some important files in $darknet\_ros$. The $.weights$ file and $.cfg$ file contain the trained weights and labels etc for a specific YOLO version. Here, I use YOLO9000. The $yolo.yaml$ file points to these two files and defines a threshold value $0.3$. By doing this, the results will be reported only if the YOLO9000 prediction probability of a detection class exceeds this value. 
+Figure \ref{yolofolder} shows some important files in $darknet\_ros$. The $.weights$ file and $.cfg$ file contain the trained weights and labels etc for a specific YOLO version. Here, I use YOLO9000. The $yolo.yaml$ file points to these two files and defines a threshold value of $0.3$. By doing this, the results will be reported only if the YOLO9000 prediction probability of a detection class exceeds this value. 
 
 The file named $ros.yaml$ defines the names and some parameters of the publishers, subscribers and actions of $darknet\_ros.launch$. Here, the input can be set as camera topic $/camera/rgb/image\_raw$ for ASUS Xtion, or $/zed\slash zed\_node\slash rgb\slash image\_rect\_color$ for ZED Mini, both contain the RGB images taken by the camera. It publishes several topics but only $/darknet\_ros/bounding\_boxes$ will be used in the following algorithms. The messages in this topic include the prediction class names of objects, their prediction probabilities and 2D bounding box coordinates ($xmin$, $xmax$, $ymin$, and $ymax$). If the category is predicted as 'shoe' or 'footwear', the corresponding box coordinates will be recorded. By speeding up with GPU, $darknet\_ros$ can update the detection results approximately every 0.05 seconds.
 
@@ -81,7 +81,7 @@ Figure \ref{5.2zed} and \ref{5.2asus} are the examples of YOLO detection using d
 \caption{Examples of possible shoe orientations. The shoe poses in (c) and (d) are not ideal and need adjustment.}
 \end{figure}
 
-In the beginning, the shoe can be placed on the workbench in different directions, making the real manipulation difficult in some cases, especially when it is vertically placed (Figure \ref{ver1} and \ref{ver2}). Therefore, under this circumstance, its orientation need to be adjusted. Figure \ref{adjustmentidea} displays the idea. Starting at two blue points ($adl$ and $adr$), both of YuMi's grippers will move towards the orange points ($adll$ and $adrr$) simultaneously to perform the adjustment. After that, they will follow the previous paths and return to blue points in order to avoid potential collisions with the shoe. The ideal shoe pose after adjustment is shown on the right hand side.
+In the beginning, the shoe can be placed on the workbench in different directions, making the real manipulation difficult in some cases, especially when it is vertically placed (Figure \ref{ver1} and \ref{ver2}). Therefore, under this circumstance, its orientation needs to be adjusted. Figure \ref{adjustmentidea} displays the idea. Starting at two blue points ($adl$ and $adr$), both of YuMi's grippers will move towards the orange points ($adll$ and $adrr$) simultaneously to perform the adjustment. After that, they will follow the previous paths and return to blue points in order to avoid potential collisions with the shoe. The ideal shoe pose after adjustment is shown on the right-hand side.
 
 \begin{figure}[H]
 \centering
@@ -112,9 +112,9 @@ if len(adr) > 0:
     #self._tfpub.sendTransform((adr), tf.transformations.quaternion_from_euler(0, 0, 0), rospy.Time.now(), "adr", '/zed_left_camera_frame') #if using ZED Mini
 \end{minted}
 
-The above code example is for calculating the real-word location of $adr$. Since the $field\_names$ in $pc2.read\_points$ function is defined as $x, y, z$, the only location information will be output, which is based on camera frame and camera axes. However, in order to move YuMi's arm around this location in later stages, the reading needs to be related to YuMi frame $yumi\_base\_link$ and using YuMi axes format. For ZED Mini, its axes are the same as YuMi's, so the reading format does not need to be modified (see line 5). While for ASUS Xtion, they are different and the corresponding adjustment is shown in line 4 of the code. 
+The above code example is for calculating the real-world location of $adr$. Since the $field\_names$ in $pc2.read\_points$ function is defined as $x, y, z$, the only location information will be output, which is based on camera frame and camera axes. However, in order to move YuMi's arm around this location in later stages, the reading needs to be related to YuMi frame $yumi\_base\_link$ and using YuMi axes format. For ZED Mini, its axes are the same as YuMi's, so the reading format does not need to be modified (see line 5). While for ASUS Xtion, they are different and the corresponding adjustment is shown in line 4 of the code. 
 
-As mentioned in Analysis and Design Chapter, $TF$ keeps the relationship between frames and will used for the frame conversion. The location $adr$ is firstly published using $sendTransdorm$ function, as a transform from camera frame $camera\_$ $link$ or $zed\_left\_camera\_frame$ (see line 6 and 7). Then $lookupTransform$ function can then be used to obtained the location based on frame $yumi\_base\_link$, which will be further discussed in next Section \ref{adj} together with detailed adjustment implementation. Figure \ref{3dadj} shows these frames visualized in Rviz.
+As mentioned in the Analysis and Design Chapter, $TF$ keeps the relationship between frames and will be used for the frame conversion. The location $adr$ is firstly published using $sendTransdorm$ function, as a transform from camera frame $camera\_$ $link$ or $zed\_left\_camera\_frame$ (see line 6 and 7). Then $lookupTransform$ function can then be used to obtain the location based on frame $yumi\_base\_link$, which will be further discussed in next Section \ref{adj} together with full adjustment implementation. Figure \ref{3dadj} shows these frames visualized in Rviz.
 
 \begin{figure}[H]
 \centering
@@ -135,9 +135,9 @@ After adjustment, the direction of the shoe and the interested shoe hole is cons
 
 
 \section{3D Location of Shoe Hole} \label{3dlocationestimation}
-Since the shoe is marked, shoe hole detection can be achieved with color detection. Due to the fact that there are other objects on the workbench and color tracking is very sensitive to light condition, perform this technique using entire image cannot provide accurate results. Therefore, the image will firstly be cropped using $xmin$, $xmax$, $ymin$, and $ymax$ value computed in section \ref{shoedetection}. Color detection only applies to the cropped region of interest.
+Since the shoe is marked, shoe hole detection can be achieved with color detection. Due to the fact that there are other objects on the workbench and color tracking is susceptible to light condition, perform this technique using the entire image cannot provide accurate results. Therefore, the image will firstly be cropped using $xmin$, $xmax$, $ymin$, and $ymax$ value computed in section \ref{shoedetection}. Color detection only applies to the cropped region of interest.
 
-The image of shoe always contains a certain level of high frequency noise. Various blurring and smoothing techniques have been tried to tackle this issue and their results are shown in Figure \ref{zedfilter} second line when using ZED Mini camera (see Figure \ref{asusfilter} for ASUS Xtion). The blurred image is then converted to HSV color space. After that, a mask for color 'blue' is constructed using its predefined lower and color boundaries. The $erode$ and $dilate$ functions are then performed to remove any small blobs remain in the mask. It can be discovered that basically all the four filter can provide a reasonable mask of shoe hole area.
+The image of the shoe always contains a certain level of high-frequency noise. Various blurring and smoothing techniques have been tried to tackle this issue and their results are shown in Figure \ref{zedfilter} the second line when using ZED Mini camera (see Figure \ref{asusfilter} for ASUS Xtion). The blurred image is then converted to HSV color space. After that, a mask for color 'blue' is constructed using the predefined lower and color boundaries. The $erode$ and $dilate$ functions are then performed to remove any small blobs remain in the mask. It can be discovered that basically all the four filters can provide a reasonable mask of shoe hole area.
 
 \begin{figure}
 \centering
@@ -183,7 +183,7 @@ The contour(s) of blue area(s) are then calculated. If at least one contour is d
 \caption{Example of shoe hole 3D location estimation while using ZED Mini}
 \end{figure}
 
-Once the 2D pixel position is computed, same approach as in Section \ref{shoeadjust} will be used to obtain its 3D real-world location $shoe\_hole$ referenced to camera frame. To improve its stability, 10 readings of $shoe\_hole$ will be recorded and averaged out before publishing to $TF$. Figure \ref{3dpos} is the frames example visualized in Rviz.
+Once the 2D pixel position is computed, the same approach as in Section \ref{shoeadjust} will be used to obtain its 3D real-world location $shoe\_hole$ referenced to the camera frame. To improve its stability, every ten readings of $shoe\_hole$ will be recorded and averaged out before publishing to $TF$. Figure \ref{3dpos} is the frames example visualized in Rviz.
 
 \section{3D Orientation of Shoe Hole} \label{3DOrientationofShoeHole}
 Due to the fact that the surrounding area of the shoe hole can be regarded as a plane, as shown in Figure \ref{plane}, its 3D orientation is the same as that of the plane. In addition, the orientation of a plane can be obtained from its plane equation. For a plane $Ax + By + Cz = D$, its normal vector is $n = Ai + Bj + Ck$.
@@ -197,7 +197,7 @@ Recall the project requirement, the shoelace is held by YuMi's gripper before th
 \label{plane}
 \end{figure}
 
-As mentioned in Background Chapter, by extracting all the surrounding point clouds of the shoe hole, RANSAC can then be applied to estimate the plane parameters A, B, C, and D, while ignoring the outliers. Here, the reasonable surrounding area is the blue contour area detected in Section \ref{3dlocationestimation}. In other words, it consists of all the white points in the final mask image shown in Figure \ref{zedfilter}. For ASUS Xtion camera, these points need to be converted to YuMi's axis format as before. Taking these points as input, following settings are used for RANSAC. Notice that the number of hypothetical inliers varies with camera resolution.
+As mentioned in Background Chapter, by extracting all the surrounding point clouds of the shoe hole, RANSAC can then be applied to estimate the plane parameters A, B, C, and D, while ignoring the outliers. Here, the reasonable surrounding area is the blue contour area detected in Section \ref{3dlocationestimation}. In other words, it consists of all the white points in the final mask image shown in Figure \ref{zedfilter}. For ASUS Xtion camera, these points need to be converted to YuMi's axis format as before. Taking these points as input, the following settings are used for RANSAC. Notice that the number of hypothetical inliers varies with camera resolution.
 
 \begin{table}[H]
 \centering
@@ -216,7 +216,7 @@ ZED Mini 1080p & 300 & 0.01 & 200 \\ \hline
 
 Again, the output plane parameters are referenced to the camera frame, whose direction points into the shoe. Therefore, location $pre\_put$ can be represented as $(-0.1*A, -0.1*B, -0.1*C)$ referenced to $shoe\_hole$. The minus sign is for converting the normal vector direction to face away from the hole, $0.1$ is used to adjust the length between $pre\_put$ and $shoe\_hole$.
 
-Another issue of this approach is that $pre\_put$ has volatility, especially for low resolution camera like ASUS Xtion. The readings fluctuate every time, which are extremely unstable. To tackle this, I firstly introduced a constraint. Since the orientation of the shoe hole is supposed to toward camera side, the x coordinate of $pre\_put$ must be smaller or equal to that of the $shoe\_hole$ (x-axis is the red line in Figure \ref{xaxis}). Therefore, the algorithm will ignore any calculated vector with unreasonable x coordinates. 
+Another issue of this approach is that $pre\_put$ has volatility, especially for the low-resolution camera like ASUS Xtion. The readings fluctuate every time, which are extremely unstable. To tackle this, I firstly introduced a constraint. Since the orientation of the shoe hole is supposed to toward camera side, the x coordinate of $pre\_put$ must be smaller or equal to that of the $shoe\_hole$ (x-axis is the red line in Figure \ref{xaxis}). Therefore, the algorithm will ignore any calculated vector with unreasonable x coordinates. 
 
 \begin{figure}[H]
 \centering
@@ -228,7 +228,7 @@ Another issue of this approach is that $pre\_put$ has volatility, especially for
 To further improve the stability and accuracy of the results, every 50 vector coefficients will be recorded when using ASUS Xtion, every 10 vector coefficients will be documented if using ZED Mini 720p and 3 vector parameters for 1080p, and further data processing will be performed. The following two techniques have been experimented.
 
 \begin{itemize}
-    \item \textbf{K-means Clustering:} K-means can partition these $pre\_put$ into k clusters where each point belongs to the cluster with the nearest mean. The cluster with the most number of points will be treated as the correct one and the cluster mean is the final $pre\_put$s. However, for this approach, the number of cluster need to be defined at first. Different settings give very different results even under same environments. Once the selected cluster is wrong, the resulting point can be ridiculous sometimes, which is unreliable.
+    \item \textbf{K-means Clustering:} K-means can partition these $pre\_put$ into k clusters where each point belongs to the cluster with the nearest mean. The cluster with the most number of points will be treated as the correct one and the cluster mean is the final $pre\_put$s. However, for this approach, the number of the cluster need to be defined at first. Different settings give very different results even under the same environments. Once the selected cluster is wrong, the resulting point can be ridiculous sometimes, which is unreliable.
     
     \item \textbf{Average:} Considering the majority of calculated points are reliable, averaging these $pre\_put$s should give a reasonable answer. This method has been experimented and proven to be effective.
 \end{itemize}

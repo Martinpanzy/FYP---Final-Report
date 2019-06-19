@@ -3,7 +3,7 @@
 %The project specification should state clearly what the project is intended to deliver, including all hardware, software, simulation.
 
 \section{The Project Deliverable}
-The objective of this project is to solve of problem of putting shoe laces on a marked shoe using bi-manual robot YuMi. Starting with one arm holding the shoelace, YuMi should detect a shoe hole and pass the shoelace through it by planning an arm trajectory. For the project extension, YuMi will also plan sequences of trajectories to complete more holes up to the whole shoe.
+The objective of this project is to solve the problem of putting shoelaces on a marked shoe using bi-manual robot YuMi. Starting with one arm holding the lace, YuMi should detect a shoe hole and pass the shoelace through it by planning an arm trajectory. For the project extension, YuMi will also plan sequences of trajectories to complete more holes up to the whole shoe.
 
 \begin{figure}[H]
 \centering
@@ -17,7 +17,7 @@ As illustrated in Figure \ref{shoe}, the marked shoe for manipulation has distin
 The project deliverables contain both core project and extensions can be divided into two main parts: Computer Vision and Motion Planning.
 
 \section{Computer Vision}
-The main aim of this part is to compute the real-time 6D pose of a specific shoe hole. There are also other tasks include providing the YuMi end-effector with the positional information needed for shoe pose adjustment, calculating the shoelace orientation before entering the second hole, etc. The algorithm must provide an accurate and stable result so that it can be used for actual shoe lace manipulation. The following features should be delivered:
+The main aim of this part is to compute the real-time 6D pose of a specific shoe hole. There are also other tasks include providing the YuMi end-effector with the positional information needed for shoe pose adjustment, calculating the shoelace orientation before entering the second hole, etc. The algorithm must provide an accurate and stable result so that it can be used for actual shoe and shoelace manipulation. The following features should be delivered:
 
 \begin{itemize}
     \item \textbf{Camera Setup (core project):} Setting up the working environment for two cameras and YuMi, measuring the pose relationships between them, and installing camera dependency packages.
@@ -30,7 +30,7 @@ The main aim of this part is to compute the real-time 6D pose of a specific shoe
 
 
 \section{Motion Planning}
-This section focus on real-world motion planning of YuMi's arms. The outcome of this part should enable YuMi to adjust the orientation of the shoe if necessary, and then put shoe lace into a hole accurately while avoiding any collisions with obstacles. Finally, YuMi should pull the shoelace out to complete that hole and adjust the gripper pose to align with the shoelace and reclamp it. So that YuMi can start to plan trajectories for next shoe hole. These objectives can be divided into following tasks:
+This section focus on real-world motion planning of YuMi's arms. The outcome of this part should enable YuMi to adjust the orientation of the shoe if necessary, and then put shoelace into a hole accurately while avoiding any collisions with obstacles. Finally, YuMi should pull the lace out to complete that hole and adjust the gripper pose to align with the shoelace and reclamp it. So that YuMi can start to plan trajectories for the next shoe hole. These objectives can be divided into the following tasks:
 
 \begin{itemize}
     \item \textbf{MoveIt! Interface and Planning Scene Setup (core project):} Setting up the MoveIt! Python interface, and initializing the manipulating environment by defining known obstacles' dimension and position.
@@ -39,7 +39,8 @@ This section focus on real-world motion planning of YuMi's arms. The outcome of 
     \item \textbf{Shoe Pose Adjustment (extension):} Adjusting the orientation of shoe using YuMi gripper if its pose is not ideal. 
     \item \textbf{Robot Gripper Approaching Pose (core project):} Computing the 6D approaching pose to the interested shoe hole, and defining a series of required waypoints.
     \item \textbf{Offset Adjustment and Shoelace Insertion (core project):} Adjusting the offset between camera readings and YuMi movement, especially offset introduced by the gripper's pose, and finally inserting the shoelace into the shoe hole.
-    \item \textbf{Shoelace Grabbing (extension):} Computing the 6D shoelace grasping pose in order to pull it out, and a series of motions in preparation for calculating the 6D pose of shoelace.
+    \item \textbf{Shoelace Grabbing and Pulling (extension):} Computing the 6D shoelace grasping pose in order to pull it out, and a series of motions in preparation for calculating the 6D pose of the shoelace.
+    \item \textbf{Shoelace Re-clamping (extension):} Aligning the gripper pose with that of the shoelace and re-clamping it before inserting the next hole.
 \end{itemize}
 
 

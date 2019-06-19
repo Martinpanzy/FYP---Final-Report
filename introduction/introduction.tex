@@ -1,10 +1,12 @@
 \chapter{Introduction}
 %It should begin with a clear statement of what the project is about so that the nature and scope of the project can be understood by a lay reader. 
 
-In the past decades, robots have become an indispensable role in human life. There are various types of robots in the fields of manufacturing, healthcare, education, entertainment and military etc. No matter which category a robot belongs to, it is essential to endow the robot with some abilities so that it can perform corresponding tasks. Currently, there are mainly three approaches to teach skills to robots: direct programming, imitation learning and reinforcement learning, according to \citep{Kormushev_MDPI_2013}. However, there exists a trade-off between the difficulty to teach and computational complexity. Thus, a different approach should be adopted based on task specification.
+In the past decades, robots have become an indispensable role in human life. There are various types of robots in the fields of manufacturing, healthcare, education, entertainment, and military, etc. No matter which category a robot belongs to, it is essential to endow the robot with some abilities so that it can perform corresponding tasks. Currently, there are mainly three approaches to teach skills to robots: direct programming, imitation learning, and reinforcement learning, according to \citep{Kormushev_MDPI_2013}. However, there exists a trade-off between the difficulty to teach and computational complexity. Thus, a different approach should be adopted based on task specification.
 
 \section{Motivation}
 Speaking of non-industry environments, robot manipulation tasks usually cannot rely on hard-coded knowledge about the scene structure. This is because the environment can be modified by human actions, which is unforeseeable. Thus, a vision-based object recognition and localization system is extremely useful for providing the robot with scene knowledge. By combining computer vision techniques with motion planning, it enables robots to perform tasks more flexible and equip with a certain degree of autonomy.
+
+However, the majority of relevant applications allow for high manipulation tolerance, such as pick up an object from the table and place it in the designated spot, pour water, and open the door, etc. These manipulation tasks can still be completed by a robot even if there is an offset of a few centimeters. Therefore, precise vision-based manipulation problems need to be tackled and further researched.
 
 \section{Objectives}
 %ability independently to formulate and solve technical problems in project work. 
@@ -12,18 +14,18 @@ Speaking of non-industry environments, robot manipulation tasks usually cannot r
 Therefore, as my final year project, I aim to develop an algorithm for a bi-manual robot so that it can put shoelace on a marked shoe. In the core project, starting with one arm holding one end of the shoelace, the robot should detect a shoe hole and plan an arm trajectory to pass the shoelace through that hole. As an extension, the robot should be able to plan sequences of trajectories in order to complete the whole shoe.
 
 \section{Challenges}
-Due to the relatively small size of the shoe hole, this project requires a high degree of precision. Firstly, the optimal methods to localize the shoe hole need to be figured out. Then, the main challenge is to calculate the direction in which the lace should pass through the shoe hole in the dynamic environment. In addition, how to use robot arms to achieve this task accordingly also requires an accurate analysis. Finally, plenty of tests regarding the whole system need to be done in order to optimize the performance.
+Due to the relatively small size of the shoe hole, this project requires a high degree of precision. Firstly, the optimal methods to localize the shoe hole need to be figured out. Then, the main challenge is to calculate the direction in which the lace should pass through the shoe hole in the dynamic environment. Besides, how to use robot arms to achieve this task accordingly also requires an accurate analysis. Finally, plenty of tests regarding the whole system need to be done to optimize the performance.
 
 \section{Report Structure}
 This report is structured as follows:
 
 \begin{itemize}
     \item \textbf{Chapter 2 - Background} provides a background analysis of this project, including the choice of robot and camera, possible implementation approaches for both motion planning and computer vision side, as well as the chosen operating system and software. 
-    \item \textbf{Chapter 3 - Requirement Capture} describes the detailed deliverables of the core project and the extension, so that the reader can keep the objectives in mind while reading the remaining part.
-    \item \textbf{Chapter 4 - Analysis and Design} introduces the designed system overview and workflow in order to achieve both the core project and extension. A brief introduction to the operating system and the robot status is included as well.
-    \item \textbf{Chapter 5 and 6 - Implementation} gives the detailed approaches to fulfill the project requirements.
+    \item \textbf{Chapter 3 - Requirement Capture} describes the specific deliverables of the core project and the extension so that the reader can keep the objectives in mind while reading the remaining part.
+    \item \textbf{Chapter 4 - Analysis and Design} introduces the designed system overview and workflow to achieve both the core project and extension. A brief introduction to the operating system and the robot status is included as well.
+    \item \textbf{Chapter 5 and 6 - Implementation} gives comprehensive approaches to fulfill the project requirements.
     \item \textbf{Chapter 7 - Testing and Results} presents a series of experimental results of the implemented methods. Success rate and execution time are the two evaluation criteria.
-    \item \textbf{Chapter 8 - Conclusion} summarises the achievements of this project together with the advantages and limits. 
+    \item \textbf{Chapter 8 - Conclusion} summarises the achievements of this project, together with the advantages and limits. 
     \item \textbf{Chapter 9 - Future Work} suggests a few alternative implementation ideas that could extend the scope of this project. 
     \item \textbf{Chapter 10 - User Guide} offers the instructions to launch this project.
 \end{itemize}

@@ -1,11 +1,11 @@
 \chapter{Implementation - Motion Planning}
 
-This chapter covers the implementation methods on motion planning side of this project. Relevant code information can be found in User Guide Chapter.
+This chapter covers the implementation methods on the motion planning side of this project. Relevant code information can be found in the User Guide Chapter.
 
 \section{MoveIt! Interface and Planning Scene Setup} \label{motionplansetup}
 As mentioned in Background Chapter, the motion planning part will utilize MoveIt!. The $moveit\_commander$ namespace is imported in order to use Python MoveIt! interface. This namespace contains a $RobotCommander$ class, a $MoveGroupComman$ $der$ class, and a $PlanningSceneInterface$ class.
 
-A $RobotCommander$ object is firstly instantiated called $robot$. This object is the outer-level interface to the robot, which allow user to catch YuMi's names of joints, groups, and links and easy access to their properties.
+A $RobotCommander$ object is firstly instantiated called $robot$. This object is the outer-level interface to the robot, which allows the user to catch YuMi's names of joints, groups, and links and easy access to their properties.
 
 To plan and execute motions on the YuMi, $MoveGroupCommander$ objects need to be instantiated as well. Each object should be one group of joints. In this case, the group can be $left\_arm$, $right\_arm$, and $both\_arms$. All of them are defined with the following settings.
 
@@ -45,9 +45,9 @@ The opening and closing of YuMi' gripper(s) depend on the gripper effort value, 
 As for YuMi's arm(s) control, it can be implemented in two ways: setting a joint goal or setting a pose goal.
 
 \begin{itemize}
-    \item \textbf{Joint Goal:} Each of YuMi's arm has 7 joints (shown in Figure \ref{yumijoint}). By setting them to specific value, every joint on the arm will rotate or bend accordingly to that configuration. The position of end-effector can be computed using forward kinematics.
+    \item \textbf{Joint Goal:} Each of YuMi's arm has 7 joints (shown in Figure \ref{yumijoint}). By setting them to a specific value, every joint on the arm will rotate or bend accordingly to that configuration. The position of end-effector can be computed using forward kinematics.
     
-    In this project, this approach is used to adjust YuMi's arm(s) to safe poses through the manipulation process, which will be introduced in Section \ref{safetyposescalculation}. In addition, shoelace adjustment after pulling ultilizes this method as well, which is introduced in Section \ref{shoelacegrabbing}.
+    In this project, this approach is used to adjust YuMi's arm(s) to safe poses through the manipulation process, which will be introduced in Section \ref{safetyposescalculation}. In addition, shoelace adjustment after pulling utilizes this method as well, which is introduced in Section \ref{shoelacegrabbing}.
 \end{itemize}
 
 \begin{figure}[H]
@@ -58,12 +58,12 @@ As for YuMi's arm(s) control, it can be implemented in two ways: setting a joint
 \end{figure}
 
 \begin{itemize}
-    \item \textbf{Pose Goal:} The movement of a group can also be controlled by setting a pose goal for YuMi's end-effector(s) directly. The pose contains 3D position (x, y, z) and 3D orientation information (roll, pitch, yaw). The joint parameters that achieve this pose can be calculated via inverse kinematics. Notice that for the same pose goal, the joint parameters can be different.
+    \item \textbf{Pose Goal:} The movement of a group can also be controlled by setting a pose goal for YuMi's end-effector(s) directly. The pose contains 3D position (x, y, z) and 3D orientation information (roll, pitch, yaw). The joint parameters that achieve this pose can be calculated via inverse kinematics. Notice that for the same pose goal, the joint settings can be different.
     
-    This method is used throughout the manipulation process including adjusting shoe pose, putting the lace through shoe hole, and grabbing the shoelace etc.
+    This method is used throughout the manipulation process, including adjusting shoe pose, putting the lace through shoe hole, and grabbing the shoelace etc.
 \end{itemize}
 
-For single arm manipulation, letting the end-effector move to a pose goal can be achieved in two ways. Either using $compute\_cartesian\_path$ or $set\_pose\_target$ function. For a given pose goal, the former method will be tried first, and if it fails, the later one will be used. The $compute\_cartesian\_path$ function computes a Cartesian path that follows specified waypoints (6D poses). The maximum resulting step size between the end-effector configurations of consecutive points in the result trajectory is predefined, which is 0.005 that provides a resolution of $5mm$. Collision and kinematic will be checked and if these constraints cannot be met, the function will return a fraction of the path achieved between $0$ and $1$. If successful, fraction will equal to $1$.
+For single arm manipulation, letting the end-effector move to a pose goal can be achieved in two ways. Either using $compute\_cartesian\_path$ or $set\_pose\_target$ function. For a given pose goal, the former method will be tried first, and if it fails, the later one will be used. The $compute\_cartesian\_path$ function computes a Cartesian path that follows specified waypoints (6D poses). The maximum resulting step size between the end-effector configurations of consecutive points in the resulting trajectory is predefined, which is 0.005 that provides a resolution of $5mm$. Collision and kinematic will be checked and if these constraints cannot be met, the function will return a fraction of the path achieved between $0$ and $1$. If successful, the fraction will equal to $1$.
 
 \begin{minted}[frame=single, framesep=1.5mm, baselinestretch=1, fontsize=\footnotesize, linenos, breaklines]{python}
 (plan, fraction) = cur_arm.compute_cartesian_path(waypoints, 0.005, 0.0, True)
@@ -96,7 +96,7 @@ def plan_and_move_dual(target_l, target_r):
 Figure \ref{safeposition} shows three pre-defined safe poses of YuMi: cal pose, home pose and initial pose. For each manipulation, YuMi will start with cal pose, then move to either home or initial pose before performing the tasks. Once it finishes the job, it will move back to home or initial pose before finally returning to cal pose. By doing so, YuMi's arm(s) will always move in front of and under the cameras, which prevents potential collisions with the cameras and the workspace computer.
 
 The 14 joint parameters ($safeJointPositionR$ and $safeJointPositionL$) of these safe poses are measured by using $get\_current\_joint\_values$ function, after moving YuMi's arms to
-these desired poses in Rviz. For each safe pose, the joint goals can the be set accordingly. Following is the code example to plan and move both arms to a safe pose.
+these desired poses in Rviz. For each safe pose, the joint goals can then be set accordingly. Following is the code example of planning and moving both arms to a safe posture.
 
 \begin{minted}[frame=single, framesep=1.5mm, baselinestretch=1, fontsize=\footnotesize, linenos, breaklines]{python}
 elif (arm == BOTH):
@@ -126,7 +126,7 @@ The output $trans\_adr$ is the 3D location (x, y, z) of a waypoint. However, the
 \label{realadjust}
 \end{figure}
 
-Figure \ref{preposeadjust} shows the detected shoe hole before and after adjustment, the later gives a much more accurate results. Figure \ref{shoeposerange} illustrates the possible orientation range of the shoe hole after adjustment. The hole will face towards the camera, either to hole's top-left or top-right.
+Figure \ref{preposeadjust} shows the detected shoe hole before and after adjustment, the later gives much more accurate results. Figure \ref{shoeposerange} illustrates the possible orientation range of the shoe hole after adjustment. The hole will face towards the camera, either to hole's top-left or top-right.
 
 \begin{figure}[H]
 \centering
@@ -137,7 +137,7 @@ Figure \ref{preposeadjust} shows the detected shoe hole before and after adjustm
 
 
 \section{Robot Gripper Approaching Pose} \label{approachposegripper}
-When the orientation of the shoe is ideal, YuMi will start to put the shoe lace into the hole by using the computed $shoe\_hole$ and $pre\_put$ information. Same as the method used in previous section, these two locations are firstly transformed to $yumi\_base\_link$ frame, which gives the coordinates of $(x, y, z)$ and $(xn, yn, zn)$.
+When the orientation of the shoe is ideal, YuMi will start to put the shoelace into the hole by using the computed $shoe\_hole$ and $pre\_put$ information. Same as the method used in the previous section, these two locations are firstly transformed to $yumi\_base\_link$ frame, which gives the coordinates of $(x, y, z)$ and $(xn, yn, zn)$.
 
 \begin{figure}[H]
 \centering
@@ -228,8 +228,8 @@ insertion\_pose = [x + xoff, y + yoff, z + zoff, a, b + \pi, \pi]
 \label{putexample}
 \end{figure}
 
-\section{Shoelace Grabbing} \label{shoelacegrabbing}
-After the shoelace being passed through the hole, YuMi should locate this shoelace and pull it out to complete this single hole. Since the endpoint of a shoelace is straight, the orientation of the shoelace is considered to be aligned with this direction. Therefore, the approximately location of shoelace can be computed using the normal vector calculated in Section \ref{3DOrientationofShoeHole}. Given the normal vector $n = Ai + Bj + Ck$, the grab location is set as $(0.05*A, 0.05*B, 0.05*C)$ referenced to $shoe\_hole$, where $0.05$ is used to define the distance between them. Figure \ref{pick} shows the related frames in Rviz, where $pre\_put$, $shoe\_hole$, and $pick$ are on the same normal vector. Here, the $pick$ location will be transformed to $yumi\_base\_link$ frame as well, which gives the coordinate $(xp, yp, zp)$.
+\section{Shoelace Grabbing and Pulling} \label{shoelacegrabbing}
+After the shoelace being passed through the hole, YuMi should locate this shoelace and pull it out to complete this single hole. Since the endpoint of a shoelace is straight, the orientation of the shoelace is considered to be aligned with this direction. Therefore, the approximate location of shoelace can be computed using the normal vector calculated in Section \ref{3DOrientationofShoeHole}. Given the normal vector $n = Ai + Bj + Ck$, the grab location is set as $(0.05*A, 0.05*B, 0.05*C)$ referenced to $shoe\_hole$, where $0.05$ is used to define the distance between them. Figure \ref{pick} shows the related frames in Rviz, where $pre\_put$, $shoe\_hole$, and $pick$ are on the same normal vector. Here, the $pick$ location will be transformed to $yumi\_base\_link$ frame as well, which gives the coordinate $(xp, yp, zp)$.
 
 \begin{figure}[H]
 \centering
@@ -247,16 +247,16 @@ After the shoelace being passed through the hole, YuMi should locate this shoela
 \label{lacegrab}
 \end{figure}
 
-The method to solve this shoelace grabbing problem is shown in Figure \ref{lacegrab}. When YuMi's gripper is perpendicular to the inserting direction (the orange arrow), YuMi will have the highest probability to complete this task. In other words, the two fingers of the gripper should be at the two orange points respectively, which aligns with orange dash line. In this case, when the gripper closes, the shoelace can be grabbed. 
+The method to solve this shoelace grabbing problem is shown in Figure \ref{lacegrab}. When YuMi's gripper is perpendicular to the inserting direction (the orange arrow), YuMi will have the highest probability to complete this task. In other words, the two fingers of the gripper should be at the two orange points respectively, which aligns with the orange dash line. In this case, when the gripper closes, the shoelace can be grabbed. 
 
-The parameter that controls the rotation of the gripper on the z-axis is yaw. When YuMi's fingers are at two blue points in Figure \ref{lacegrab}, the yaw rotation is $\frac{\pi}{2}$. Thus, there is an angle $c$ needs to be added, which can be calculated according to Equation \ref{yawcalculation}.
+The parameter that controls the rotation of the gripper on the z-axis is yaw. When YuMi's fingers are at two blue points in Figure \ref{lacegrab}, the yaw rotation is $\frac{\pi}{2}$. Thus, there is an angle of $c$ that needs to be added, which can be calculated according to Equation \ref{yawcalculation}.
 
 \begin{equation}
 c = \arctan \frac{yp - y}{xp - x}
 \label{yawcalculation}
 \end{equation}
 
-Considering both top-left and top-right cases, the available range of $c$ is $[-\frac{\pi}{2}, \frac{\pi}{2}]$. When this condition is satisfied, the final grabbing pose can be written as Equation \ref{grabpose}. Notice that, here, the offset for 3D location is different form that of $pre\_insertion$ and $insertion\_pose$. This is because this time the gripper does not perform any roll and pitch rotations from its default orientation.
+Considering both top-left and top-right cases, the available range of $c$ is $[-\frac{\pi}{2}, \frac{\pi}{2}]$. When this condition is satisfied, the final grabbing pose can be written as Equation \ref{grabpose}. Notice that, here, the offset for 3D location is different from that of $pre\_insertion$ and $insertion\_pose$. This is because this time the gripper does not perform any roll and pitch rotations from its default orientation.
 
 \begin{equation}
 grabbing\_pose = [xp + x\_offset, yp + y\_offset, zp + z\_error, 0, \pi, c + \frac{\pi}{2} - 0.1]
@@ -277,11 +277,11 @@ In addition, $-0.1$ is added to yaw rotation. This angle adjustment prevents gri
 \subfigure[Close the right gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/8pull.jpg}}
 \subfigure[Move right gr\-ip\-per forwards and open left gripper]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/9pull.jpg}}
 \subfigure[Move left arm back to home pose]{\includegraphics[width = 0.19\columnwidth]{Implementation/mp/10pull.jpg}}
-\caption{The example motion process of grabbing and pulling shoelace out. YuMi starts from cal pose before moving to (a). The grabbing process finishes at (d). From (e) to (j) is about shoelace pulling and adjusting. YuMi moves back to cal pose after (j).}
+\caption{The example motion process of grabbing and pulling shoelace out. YuMi starts from cal pose before moving to (a). The grabbing operation finishes at (d). From (e) to (j) is about shoelace pulling and adjusting. YuMi moves back to cal pose after (j).}
 \label{pickexample}
 \end{figure}
 
-Figure \ref{pickexample} displays the shoelace grabbing and pulling process, where YuMi firstly uses its left arm. It starts from cal pose, then moves to (a) home pose before executing, and moves back to $post\_grabbing$ pose (d) after grabbing. The series of motions after (e) is for shoelace adjustment, which aims to let another gripper grasp the lower part of the shoelace, so that its colored head can be seen by the camera. To achieve this task, YuMi will firstly pull the shoelace out in (e), then move downwards to let the it hang naturally. After that the right gripper will move below the left gripper for clamping. To prevent the head from falling behind gripper which blocks the camera's view, in (i), the right arm will then move slightly away from the camera before the left gripper opening. Finally, the left arm will return to home pose (j) and go back to cal pose. 
+Figure \ref{pickexample} displays the shoelace grabbing and pulling process, where YuMi firstly uses its left arm. It starts from cal pose, then moves to (a) home pose before executing, and moves back to $post\_grabbing$ pose (d) after grabbing. The series of motions after (e) is for shoelace adjustment, which aims to let another gripper grasp the lower part of the shoelace, so that the camera can see its colored head. To achieve this task, YuMi will firstly pull the lace out in (e), then move downwards to let it hang naturally. After that, the right gripper will move below the left gripper for clamping. To prevent the head from falling behind gripper which blocks the camera's view, in (i), the right arm will then move slightly away from the camera before the left gripper opening. Finally, the left arm will return to home pose (j) and go back to cal pose. 
 
 All of the motions from (e) to (j) are planned by setting joint goals. Therefore, the posture of both arms is fixed every time. Figure \ref{3dlace} displays the camera view at stage (j).
 
@@ -292,4 +292,4 @@ All of the motions from (e) to (j) are planned by setting joint goals. Therefore
 \label{3dlace}
 \end{figure}
 
-Since the arm pose is static each time, the colored head of shoelace will always appear in the red bounding box in Figure \ref{3dlace}. Using the same approach as discussed in Section \ref{3dlocationestimation} and \ref{3DOrientationofShoeHole}, the the 3D location and 3D orientation of the shoelace can be computed. By employing similar method introduced in Section \ref{approachposegripper}, the left gripper is able to align its direction with the colored head and re-clamp. After the orientation of the shoe being adjusted based on the algorithm in Section \ref{shoeadjust} and \ref{adj} using one single arm, YuMi will be ready to perform insertion for the next hole. The whole shoe can be eventually completed according to this workflow.
+Since the arm pose is static each time, the colored head of shoelace will always appear in the red bounding box in Figure \ref{3dlace}. Using the same approach as discussed in Section \ref{3dlocationestimation} and \ref{3DOrientationofShoeHole}, the 3D location and 3D orientation of the shoelace can be computed. By employing a similar method introduced in Section \ref{approachposegripper}, the left gripper can align its direction with the colored head and re-clamp. After the orientation of the shoe being adjusted based on the algorithm in Section \ref{shoeadjust} and \ref{adj} using one single arm, YuMi will be ready to perform insertion for the next hole. The whole shoe can be eventually completed according to this workflow.
